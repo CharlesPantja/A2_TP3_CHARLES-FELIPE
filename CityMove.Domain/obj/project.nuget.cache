@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "rTT3p2aW2r0=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Charles\\Documents\\A2_CHARLES E FELIPE\\CityMove\\CityMove.Domain\\CityMove.Domain.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Charles\\.nuget\\packages\\microsoft.netcore.app.ref\\10.0.2\\microsoft.netcore.app.ref.10.0.2.nupkg.sha512",
+    "C:\\Users\\Charles\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\10.0.2\\microsoft.windowsdesktop.app.ref.10.0.2.nupkg.sha512",
+    "C:\\Users\\Charles\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\10.0.2\\microsoft.aspnetcore.app.ref.10.0.2.nupkg.sha512"
+  ],
+  "logs": []
+}

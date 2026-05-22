@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="CityMove.API/CityMove.API.csproj" />
+  <Project Path="CityMove.Domain/CityMove.Domain.csproj" />
+  <Project Path="CityMove.Infrastructure/CityMove.Infrastructure.csproj" />
+  <Project Path="CityMove.Web/CityMove.Web.csproj" />
+</Solution>
