@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "targets": {
     "net10.0": {
       "Azure.Core/1.47.1": {
@@ -3640,23 +3640,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Charles\\.nuget\\packages\\": {},
+    "C:\\Users\\uelto\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Charles\\Documents\\A2_CHARLES E FELIPE\\CityMove\\CityMove.API\\CityMove.API.csproj",
+      "projectUniqueName": "C:\\Users\\uelto\\A2_TP3_CHARLES-FELIPE\\CityMove.API\\CityMove.API.csproj",
       "projectName": "CityMove.API",
-      "projectPath": "C:\\Users\\Charles\\Documents\\A2_CHARLES E FELIPE\\CityMove\\CityMove.API\\CityMove.API.csproj",
-      "packagesPath": "C:\\Users\\Charles\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Charles\\Documents\\A2_CHARLES E FELIPE\\CityMove\\CityMove.API\\obj\\",
+      "projectPath": "C:\\Users\\uelto\\A2_TP3_CHARLES-FELIPE\\CityMove.API\\CityMove.API.csproj",
+      "packagesPath": "C:\\Users\\uelto\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\uelto\\A2_TP3_CHARLES-FELIPE\\CityMove.API\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\Charles\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\uelto\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -3669,13 +3669,14 @@
       },
       "frameworks": {
         "net10.0": {
+          "framework": "net10.0",
           "targetAlias": "net10.0",
           "projectReferences": {
-            "C:\\Users\\Charles\\Documents\\A2_CHARLES E FELIPE\\CityMove\\CityMove.Domain\\CityMove.Domain.csproj": {
-              "projectPath": "C:\\Users\\Charles\\Documents\\A2_CHARLES E FELIPE\\CityMove\\CityMove.Domain\\CityMove.Domain.csproj"
+            "C:\\Users\\uelto\\A2_TP3_CHARLES-FELIPE\\CityMove.Domain\\CityMove.Domain.csproj": {
+              "projectPath": "C:\\Users\\uelto\\A2_TP3_CHARLES-FELIPE\\CityMove.Domain\\CityMove.Domain.csproj"
             },
-            "C:\\Users\\Charles\\Documents\\A2_CHARLES E FELIPE\\CityMove\\CityMove.Infrastructure\\CityMove.Infrastructure.csproj": {
-              "projectPath": "C:\\Users\\Charles\\Documents\\A2_CHARLES E FELIPE\\CityMove\\CityMove.Infrastructure\\CityMove.Infrastructure.csproj"
+            "C:\\Users\\uelto\\A2_TP3_CHARLES-FELIPE\\CityMove.Infrastructure\\CityMove.Infrastructure.csproj": {
+              "projectPath": "C:\\Users\\uelto\\A2_TP3_CHARLES-FELIPE\\CityMove.Infrastructure\\CityMove.Infrastructure.csproj"
             }
           }
         }
@@ -3690,10 +3691,11 @@
         "auditLevel": "low",
         "auditMode": "all"
       },
-      "SdkAnalysisLevel": "11.0.100"
+      "SdkAnalysisLevel": "10.0.300"
     },
     "frameworks": {
       "net10.0": {
+        "framework": "net10.0",
         "targetAlias": "net10.0",
         "dependencies": {
           "Microsoft.AspNetCore.Authentication.JwtBearer": {
@@ -3726,24 +3728,6 @@
         ],
         "assetTargetFallback": true,
         "warn": true,
-        "downloadDependencies": [
-          {
-            "name": "Microsoft.AspNetCore.App.Ref",
-            "version": "[10.0.2, 10.0.2]"
-          },
-          {
-            "name": "Microsoft.NETCore.App.Host.win-x64",
-            "version": "[10.0.2, 10.0.2]"
-          },
-          {
-            "name": "Microsoft.NETCore.App.Ref",
-            "version": "[10.0.2, 10.0.2]"
-          },
-          {
-            "name": "Microsoft.WindowsDesktop.App.Ref",
-            "version": "[10.0.2, 10.0.2]"
-          }
-        ],
         "frameworkReferences": {
           "Microsoft.AspNetCore.App": {
             "privateAssets": "none"
@@ -3752,7 +3736,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\11.0.100-preview.1.26104.118/PortableRuntimeIdentifierGraph.json",
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.300-preview.0.26177.108/PortableRuntimeIdentifierGraph.json",
         "packagesToPrune": {
           "Microsoft.AspNetCore": "(,10.0.32767]",
           "Microsoft.AspNetCore.Antiforgery": "(,10.0.32767]",

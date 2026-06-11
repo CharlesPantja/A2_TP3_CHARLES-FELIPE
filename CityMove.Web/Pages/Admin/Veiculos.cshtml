@@ -1,0 +1,109 @@
+@page
+@model CityMove.Web.Pages.Admin.VeiculosModel
+@{
+    ViewData["Title"] = "Gestão de Veículos";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 m-0">Gestão de Veículos</h1>
+    <a asp-page="/Painel" class="btn btn-link px-0">&larr; Voltar ao painel</a>
+</div>
+
+@if (!string.IsNullOrEmpty(Model.Mensagem))
+{
+    <div class="alert alert-success">@Model.Mensagem</div>
+}
+@if (!string.IsNullOrEmpty(Model.Erro))
+{
+    <div class="alert alert-danger">@Model.Erro</div>
+}
+
+<div class="row g-4">
+    <div class="col-12 col-lg-5">
+        <div class="card cm-card">
+            <div class="card-body">
+                <h2 class="h5 mb-3">@(Model.Editando ? "Editar veículo" : "Novo veículo")</h2>
+                <form method="post" asp-page-handler="Salvar">
+                    <input type="hidden" asp-for="Id" />
+                    <div class="mb-2">
+                        <label class="form-label">Linha</label>
+                        <select asp-for="LinhaId" class="form-select" required>
+                            <option value="">Selecione...</option>
+                            @foreach (var l in Model.Linhas)
+                            {
+                                <option value="@l.Id">@l.Codigo - @l.Nome</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Placa</label>
+                        <input asp-for="Placa" class="form-control" required maxlength="8" />
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Marca</label>
+                        <input asp-for="Marca" class="form-control" required />
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Modelo</label>
+                        <input asp-for="Modelo" class="form-control" required />
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Capacidade</label>
+                        <input asp-for="Capacidade" type="number" min="1" max="200" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Status</label>
+                        <select asp-for="StatusVeiculo" class="form-select">
+                            @foreach (var s in CityMove.Web.Pages.Admin.VeiculosModel.Status)
+                            {
+                                <option value="@s">@s</option>
+                            }
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-cm">@(Model.Editando ? "Salvar alterações" : "Cadastrar")</button>
+                    @if (Model.Editando)
+                    {
+                        <a asp-page="/Admin/Veiculos" class="btn btn-link">Cancelar</a>
+                    }
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-7">
+        <div class="card cm-card">
+            <div class="card-body">
+                <h2 class="h5 mb-3">Frota cadastrada (@Model.Veiculos.Count)</h2>
+                @if (Model.Veiculos.Count == 0)
+                {
+                    <p class="text-muted m-0">Nenhum veículo cadastrado.</p>
+                }
+                else
+                {
+                    <table class="table table-sm align-middle">
+                        <thead><tr><th>Placa</th><th>Marca/Modelo</th><th>Cap.</th><th>Status</th><th></th></tr></thead>
+                        <tbody>
+                        @foreach (var v in Model.Veiculos)
+                        {
+                            <tr>
+                                <td class="font-monospace">@v.Placa</td>
+                                <td>@v.Marca @v.Modelo</td>
+                                <td>@v.Capacidade</td>
+                                <td>@v.StatusVeiculo</td>
+                                <td class="text-end text-nowrap">
+                                    <a asp-page="/Admin/Veiculos" asp-route-editId="@v.Id" class="btn btn-sm btn-cm-outline">Editar</a>
+                                    <form method="post" asp-page-handler="Excluir" class="d-inline"
+                                          onsubmit="return confirm('Remover o veículo @v.Placa?');">
+                                        <input type="hidden" name="id" value="@v.Id" />
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Excluir</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+    </div>
+</div>

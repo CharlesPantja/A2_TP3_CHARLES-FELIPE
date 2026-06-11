@@ -1304,6 +1304,9 @@
       "CityMove.Domain/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v10.0",
+        "dependencies": {
+          "Microsoft.Extensions.Identity.Stores": "10.0.8"
+        },
         "compile": {
           "bin/placeholder/CityMove.Domain.dll": {}
         },

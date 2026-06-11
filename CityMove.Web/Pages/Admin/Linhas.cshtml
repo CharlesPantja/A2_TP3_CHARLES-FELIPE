@@ -1,0 +1,100 @@
+@page
+@model CityMove.Web.Pages.Admin.LinhasModel
+@{
+    ViewData["Title"] = "Gestão de Linhas";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 m-0">Gestão de Linhas</h1>
+    <a asp-page="/Painel" class="btn btn-link px-0">&larr; Voltar ao painel</a>
+</div>
+
+@if (!string.IsNullOrEmpty(Model.Mensagem))
+{
+    <div class="alert alert-success">@Model.Mensagem</div>
+}
+@if (!string.IsNullOrEmpty(Model.Erro))
+{
+    <div class="alert alert-danger">@Model.Erro</div>
+}
+
+<div class="row g-4">
+    <div class="col-12 col-lg-5">
+        <div class="card cm-card">
+            <div class="card-body">
+                <h2 class="h5 mb-3">@(Model.Editando ? "Editar linha" : "Nova linha")</h2>
+                <form method="post" asp-page-handler="Salvar">
+                    <input type="hidden" asp-for="Id" />
+                    <div class="mb-2">
+                        <label class="form-label">Código</label>
+                        <input asp-for="Codigo" class="form-control" required maxlength="20" />
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Nome</label>
+                        <input asp-for="Nome" class="form-control" required maxlength="120" />
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Tipo</label>
+                        <select asp-for="TipoLinha" class="form-select">
+                            @foreach (var t in CityMove.Web.Pages.Admin.LinhasModel.Tipos)
+                            {
+                                <option value="@t">@t</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Tarifa (R$)</label>
+                        <input asp-for="Tarifa" type="number" step="0.01" min="0" class="form-control" required />
+                    </div>
+                    <div class="form-check mb-3">
+                        <input asp-for="Ativa" class="form-check-input" />
+                        <label class="form-check-label">Linha ativa</label>
+                    </div>
+                    <button type="submit" class="btn btn-cm">@(Model.Editando ? "Salvar alterações" : "Cadastrar")</button>
+                    @if (Model.Editando)
+                    {
+                        <a asp-page="/Admin/Linhas" class="btn btn-link">Cancelar</a>
+                    }
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-7">
+        <div class="card cm-card">
+            <div class="card-body">
+                <h2 class="h5 mb-3">Linhas cadastradas (@Model.Linhas.Count)</h2>
+                @if (Model.Linhas.Count == 0)
+                {
+                    <p class="text-muted m-0">Nenhuma linha cadastrada.</p>
+                }
+                else
+                {
+                    <table class="table table-sm align-middle">
+                        <thead><tr><th>Código</th><th>Nome</th><th>Tipo</th><th>Tarifa</th><th>Ativa</th><th></th></tr></thead>
+                        <tbody>
+                        @foreach (var l in Model.Linhas)
+                        {
+                            <tr>
+                                <td><span class="badge cm-badge">@l.Codigo</span></td>
+                                <td>@l.Nome</td>
+                                <td>@l.TipoLinha</td>
+                                <td>R$ @l.Tarifa.ToString("0.00")</td>
+                                <td>@(l.Ativa ? "Sim" : "Não")</td>
+                                <td class="text-end text-nowrap">
+                                    <a asp-page="/Admin/Linhas" asp-route-editId="@l.Id" class="btn btn-sm btn-cm-outline">Editar</a>
+                                    <form method="post" asp-page-handler="Excluir" class="d-inline"
+                                          onsubmit="return confirm('Remover a linha @l.Codigo?');">
+                                        <input type="hidden" name="id" value="@l.Id" />
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Excluir</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+    </div>
+</div>

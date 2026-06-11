@@ -1,0 +1,26 @@
+@page
+@model CityMove.Web.Pages.LoginModel
+@{
+    ViewData["Title"] = "Entrar";
+}
+
+<h1 class="h3 mb-4">Entrar no painel</h1>
+
+@if (!string.IsNullOrEmpty(Model.Erro))
+{
+    <div class="alert alert-danger" style="max-width:420px">@Model.Erro</div>
+}
+
+<form method="post" style="max-width:420px">
+    <div class="mb-3">
+        <label class="form-label">E-mail</label>
+        <input name="Email" value="@Model.Email" type="email" class="form-control" required />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Senha</label>
+        <input name="Senha" type="password" class="form-control" required />
+    </div>
+    <button type="submit" class="btn btn-cm">Entrar</button>
+</form>
+
+<p class="text-muted mt-3"><small>Use o usuário administrador criado no Seed (ex.: admin@citymove.com).</small></p>

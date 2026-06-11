@@ -11,11 +11,13 @@ public class PublicController : ControllerBase
 {
     private readonly AppDbContext _db;
     private readonly OpenWeatherService _weather;
+    private readonly NominatimService _nominatim;
 
-    public PublicController(AppDbContext db, OpenWeatherService weather)
+    public PublicController(AppDbContext db, OpenWeatherService weather, NominatimService nominatim)
     {
         _db = db;
         _weather = weather;
+        _nominatim = nominatim;
     }
 
     // GET /api/public/linhas
@@ -74,6 +76,40 @@ public class PublicController : ControllerBase
         if (ultimo is null)
             return NotFound(new { erro = "Nenhuma posição registrada para este veículo." });
         return Ok(ultimo);
+    }
+
+    // GET /api/public/veiculos/posicoes  (última posição de cada veículo ativo - alimenta o mapa)
+    [HttpGet("veiculos/posicoes")]
+    public async Task<IActionResult> GetPosicoes()
+    {
+        // Pega o registro mais recente de cada veículo (subconsulta correlacionada - traduz bem no EF Core).
+        var posicoes = await _db.RegistrosGPS
+            .Where(g => !_db.RegistrosGPS.Any(g2 => g2.VeiculoId == g.VeiculoId && g2.CaptadoEm > g.CaptadoEm))
+            .Select(g => new
+            {
+                g.VeiculoId,
+                Placa = g.Veiculo!.Placa,
+                LinhaCodigo = g.Veiculo.Linha!.Codigo,
+                LinhaNome = g.Veiculo.Linha.Nome,
+                g.Latitude,
+                g.Longitude,
+                g.Velocidade,
+                g.CaptadoEm
+            })
+            .ToListAsync();
+
+        return Ok(posicoes);
+    }
+
+    // GET /api/public/geocodificar?endereco=...  (consome OpenStreetMap/Nominatim - API de terceiros)
+    [HttpGet("geocodificar")]
+    public async Task<IActionResult> Geocodificar([FromQuery] string endereco)
+    {
+        if (string.IsNullOrWhiteSpace(endereco))
+            return BadRequest(new { erro = "Informe um endereço." });
+
+        var resultado = await _nominatim.GeocodificarAsync(endereco);
+        return Ok(resultado);
     }
 
     // GET /api/public/clima/{cidade}  (consome OpenWeatherMap - API de terceiros)

@@ -1,0 +1,40 @@
+@page
+@model CityMove.Web.Pages.ClimaModel
+@{
+    ViewData["Title"] = "Clima";
+}
+
+<h1 class="h3 mb-4">Previsão do tempo</h1>
+
+<form method="get" class="row g-2 mb-4" style="max-width:480px">
+    <div class="col">
+        <input name="cidade" value="@Model.Cidade" class="form-control" placeholder="Digite a cidade (ex.: Palmas)" />
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-cm">Consultar</button>
+    </div>
+</form>
+
+@if (Model.Clima is not null)
+{
+    @if (!string.IsNullOrEmpty(Model.Clima.Erro))
+    {
+        <div class="alert alert-warning">@Model.Clima.Erro</div>
+    }
+    else
+    {
+        <div class="card cm-card" style="max-width:480px">
+            <div class="card-body">
+                <h2 class="h4">@Model.Clima.Cidade</h2>
+                <p class="cm-metric mb-1">@Model.Clima.Temperatura&deg;C</p>
+                <p class="text-capitalize text-muted">@Model.Clima.Descricao</p>
+                <hr />
+                <p class="mb-1">Sensação térmica: <strong>@Model.Clima.Sensacao&deg;C</strong></p>
+                <p class="mb-1">Umidade: <strong>@Model.Clima.Umidade%</strong></p>
+                <p class="mb-0">Vento: <strong>@Model.Clima.Vento m/s</strong></p>
+            </div>
+        </div>
+    }
+}
+
+<p class="text-muted mt-3"><small>Dados fornecidos pela API OpenWeatherMap (consumo de API de terceiros).</small></p>

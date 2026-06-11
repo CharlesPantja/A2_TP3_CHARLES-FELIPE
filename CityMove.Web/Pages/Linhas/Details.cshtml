@@ -1,0 +1,61 @@
+@page "{id:int}"
+@model CityMove.Web.Pages.Linhas.DetailsModel
+@{
+    ViewData["Title"] = "Detalhes da linha";
+}
+
+<a asp-page="/Index" class="btn btn-link px-0 mb-2">&larr; Voltar para linhas</a>
+<h1 class="h3 mb-4">Linha #@Model.LinhaId</h1>
+
+<div class="row g-4">
+    <div class="col-12 col-lg-6">
+        <div class="card cm-card">
+            <div class="card-body">
+                <h2 class="h5 mb-3">Horários</h2>
+                @if (Model.Horarios.Count == 0)
+                {
+                    <p class="text-muted m-0">Nenhum horário cadastrado.</p>
+                }
+                else
+                {
+                    <table class="table table-sm">
+                        <thead><tr><th>Dia</th><th>Partida</th></tr></thead>
+                        <tbody>
+                        @foreach (var h in Model.Horarios)
+                        {
+                            <tr><td>@h.DiaSemana</td><td>@h.HoraPartida</td></tr>
+                        }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-6">
+        <div class="card cm-card">
+            <div class="card-body">
+                <h2 class="h5 mb-3">Paradas</h2>
+                @if (Model.Paradas.Count == 0)
+                {
+                    <p class="text-muted m-0">Nenhuma parada cadastrada.</p>
+                }
+                else
+                {
+                    <ol class="list-group list-group-numbered">
+                    @foreach (var p in Model.Paradas)
+                    {
+                        <li class="list-group-item d-flex justify-content-between align-items-start">
+                            <div class="ms-2 me-auto">
+                                <div class="fw-bold">@p.Parada.Nome</div>
+                                <small class="text-muted">@p.Parada.Endereco</small>
+                            </div>
+                            <span class="badge cm-badge rounded-pill">@p.TempoEstimado min</span>
+                        </li>
+                    }
+                    </ol>
+                }
+            </div>
+        </div>
+    </div>
+</div>

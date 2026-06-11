@@ -16,6 +16,13 @@ public record LinhaCreateDto(
     [Range(0, 1000)] decimal Tarifa,
     bool Ativa);
 
+// ---- Rota ----
+public record RotaCreateDto(
+    int LinhaId,
+    [Required, StringLength(160)] string Descricao,
+    [Required, StringLength(20)] string Sentido,
+    bool Ativa);
+
 // ---- Veículo ----
 public record VeiculoCreateDto(
     int LinhaId,

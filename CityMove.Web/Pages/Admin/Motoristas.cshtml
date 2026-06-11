@@ -1,0 +1,108 @@
+@page
+@model CityMove.Web.Pages.Admin.MotoristasModel
+@{
+    ViewData["Title"] = "Gestão de Motoristas";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 m-0">Gestão de Motoristas</h1>
+    <a asp-page="/Painel" class="btn btn-link px-0">&larr; Voltar ao painel</a>
+</div>
+
+@if (!string.IsNullOrEmpty(Model.Mensagem))
+{
+    <div class="alert alert-success">@Model.Mensagem</div>
+}
+@if (!string.IsNullOrEmpty(Model.Erro))
+{
+    <div class="alert alert-danger">@Model.Erro</div>
+}
+
+<div class="row g-4">
+    <div class="col-12 col-lg-5">
+        <div class="card cm-card">
+            <div class="card-body">
+                <h2 class="h5 mb-3">@(Model.Editando ? "Editar motorista" : "Novo motorista")</h2>
+                <form method="post" asp-page-handler="Salvar">
+                    <input type="hidden" asp-for="Id" />
+                    <div class="mb-2">
+                        <label class="form-label">Nome completo</label>
+                        <input asp-for="Nome" class="form-control" required />
+                    </div>
+                    @if (!Model.Editando)
+                    {
+                        <div class="mb-2">
+                            <label class="form-label">E-mail (login)</label>
+                            <input asp-for="Email" type="email" class="form-control" required />
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Senha inicial</label>
+                            <input asp-for="Senha" type="text" class="form-control" placeholder="Mínimo 6 caracteres, com maiúscula e símbolo" />
+                            <small class="text-muted">Se vazio, será definida como <code>Motorista@@123</code>.</small>
+                        </div>
+                    }
+                    <div class="row g-2">
+                        <div class="col-8 mb-2">
+                            <label class="form-label">CNH</label>
+                            <input asp-for="CNH" class="form-control" required maxlength="11" />
+                        </div>
+                        <div class="col-4 mb-2">
+                            <label class="form-label">Categoria</label>
+                            <input asp-for="CategoriaCNH" class="form-control" required />
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Validade CNH</label>
+                        <input asp-for="ValidadeCNH" type="date" class="form-control" required />
+                    </div>
+                    <div class="form-check mb-3">
+                        <input asp-for="Disponivel" class="form-check-input" />
+                        <label class="form-check-label">Disponível para escala</label>
+                    </div>
+                    <button type="submit" class="btn btn-cm">@(Model.Editando ? "Salvar alterações" : "Cadastrar")</button>
+                    @if (Model.Editando)
+                    {
+                        <a asp-page="/Admin/Motoristas" class="btn btn-link">Cancelar</a>
+                    }
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-7">
+        <div class="card cm-card">
+            <div class="card-body">
+                <h2 class="h5 mb-3">Motoristas cadastrados (@Model.Motoristas.Count)</h2>
+                @if (Model.Motoristas.Count == 0)
+                {
+                    <p class="text-muted m-0">Nenhum motorista cadastrado.</p>
+                }
+                else
+                {
+                    <table class="table table-sm align-middle">
+                        <thead><tr><th>Nome</th><th>CNH</th><th>Cat.</th><th>Disponível</th><th></th></tr></thead>
+                        <tbody>
+                        @foreach (var m in Model.Motoristas)
+                        {
+                            <tr>
+                                <td>@m.Nome</td>
+                                <td class="font-monospace">@m.CNH</td>
+                                <td>@m.CategoriaCNH</td>
+                                <td>@(m.Disponivel ? "Sim" : "Não")</td>
+                                <td class="text-end text-nowrap">
+                                    <a asp-page="/Admin/Motoristas" asp-route-editId="@m.Id" class="btn btn-sm btn-cm-outline">Editar</a>
+                                    <form method="post" asp-page-handler="Excluir" class="d-inline"
+                                          onsubmit="return confirm('Remover o motorista @m.Nome?');">
+                                        <input type="hidden" name="id" value="@m.Id" />
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Excluir</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+    </div>
+</div>

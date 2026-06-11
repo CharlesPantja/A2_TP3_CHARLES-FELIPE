@@ -1,0 +1,59 @@
+@page
+@model CityMove.Web.Pages.AcompanharModel
+@{
+    ViewData["Title"] = "Acompanhar ônibus";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <div>
+        <h1 class="h3 m-0">Acompanhar ônibus</h1>
+        <p class="text-muted m-0">Posição atual de cada veículo, atualizada automaticamente.</p>
+    </div>
+    <a asp-page="/Rastreamento" class="btn btn-cm-outline btn-sm">Ver no mapa</a>
+</div>
+
+<div class="card cm-card">
+    <div class="card-body">
+        <div class="d-flex justify-content-between mb-2">
+            <span class="text-muted">Atualiza a cada 5 segundos</span>
+            <span id="ts" class="text-muted small"></span>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-sm align-middle">
+                <thead><tr><th>Linha</th><th>Placa</th><th>Latitude</th><th>Longitude</th><th>Velocidade</th><th>Captado</th></tr></thead>
+                <tbody id="corpo">
+                    <tr><td colspan="6" class="text-muted">Carregando...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        async function atualizar() {
+            try {
+                const resp = await fetch('/Acompanhar?handler=Posicoes');
+                const dados = await resp.json();
+                const corpo = document.getElementById('corpo');
+                if (dados.length === 0) {
+                    corpo.innerHTML = '<tr><td colspan="6" class="text-muted">Nenhum ônibus em circulação.</td></tr>';
+                } else {
+                    corpo.innerHTML = dados.map(p =>
+                        `<tr><td><strong>${p.linhaCodigo}</strong> ${p.linhaNome}</td>` +
+                        `<td class="font-monospace">${p.placa}</td>` +
+                        `<td>${Number(p.latitude).toFixed(5)}</td>` +
+                        `<td>${Number(p.longitude).toFixed(5)}</td>` +
+                        `<td>${p.velocidade} km/h</td>` +
+                        `<td>${new Date(p.captadoEm).toLocaleTimeString('pt-BR')}</td></tr>`
+                    ).join('');
+                }
+                document.getElementById('ts').textContent = 'Última atualização: ' + new Date().toLocaleTimeString('pt-BR');
+            } catch (e) {
+                document.getElementById('corpo').innerHTML = '<tr><td colspan="6" class="text-danger">Falha ao consultar a API.</td></tr>';
+            }
+        }
+        atualizar();
+        setInterval(atualizar, 5000);
+    </script>
+}

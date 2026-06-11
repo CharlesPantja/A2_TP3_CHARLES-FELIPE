@@ -12,7 +12,7 @@ public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
     public AppDbContext CreateDbContext(string[] args)
     {
         var connectionString = Environment.GetEnvironmentVariable("CITYMOVE_CONNECTION")
-            ?? "Server=localhost;Database=CityMoveDb;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=true";
+            ?? "Server=localhost\\SQLEXPRESS;Database=CityMoveDb;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=true";
 
         var options = new DbContextOptionsBuilder<AppDbContext>()
             .UseSqlServer(connectionString)
