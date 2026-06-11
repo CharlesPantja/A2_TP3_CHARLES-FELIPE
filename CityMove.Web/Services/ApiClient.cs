@@ -120,6 +120,22 @@ public class ApiClient
     }
 
     // ---------- Helpers autenticados ----------
+    private async Task<T?> GetAuthAsync<T>(string endpoint, string token)
+    {
+        try
+        {
+            using var req = new HttpRequestMessage(HttpMethod.Get, endpoint);
+            req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var resp = await _http.SendAsync(req);
+            if (!resp.IsSuccessStatusCode) return default;
+            return JsonSerializer.Deserialize<T>(await resp.Content.ReadAsStringAsync(), JsonOpts);
+        }
+        catch
+        {
+            return default;
+        }
+    }
+
     private async Task<List<T>> GetAuthListAsync<T>(string endpoint, string token)
     {
         try
@@ -205,4 +221,31 @@ public class ApiClient
 
     public Task<ApiResult> ExcluirMotoristaAsync(string token, int id)
         => SendAuthAsync(HttpMethod.Delete, $"api/motoristas/{id}", null, token);
+
+    // ---------- Painel do Motorista ----------
+    public Task<ViagemAtualVm?> GetViagemAtualAsync(string token)
+        => GetAuthAsync<ViagemAtualVm>("api/motorista/viagem-atual", token);
+
+    public Task<ApiResult> EnviarGpsAsync(string token, object dto)
+        => SendAuthAsync(HttpMethod.Post, "api/motorista/gps", dto, token);
+
+    public Task<ApiResult> RegistrarOcorrenciaAsync(string token, object dto)
+        => SendAuthAsync(HttpMethod.Post, "api/motorista/ocorrencias", dto, token);
+
+    // ---------- Painel do Fiscal ----------
+    public Task<FiscalContextoVm?> GetFiscalContextoAsync(string token)
+        => GetAuthAsync<FiscalContextoVm>("api/fiscal/contexto", token);
+
+    public Task<List<FrotaItemVm>> GetFrotaAsync(string token)
+        => GetAuthListAsync<FrotaItemVm>("api/fiscal/frota", token);
+
+    public Task<ApiResult> RegistrarInfracaoAsync(string token, object dto)
+        => SendAuthAsync(HttpMethod.Post, "api/fiscal/infracoes", dto, token);
+
+    // ---------- Painel do Passageiro ----------
+    public Task<PassageiroContextoVm?> GetPassageiroContextoAsync(string token)
+        => GetAuthAsync<PassageiroContextoVm>("api/passageiro/contexto", token);
+
+    public Task<ApiResult> AvaliarViagemAsync(string token, object dto)
+        => SendAuthAsync(HttpMethod.Post, "api/passageiro/avaliacoes", dto, token);
 }

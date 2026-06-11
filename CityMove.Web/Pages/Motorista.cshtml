@@ -1,0 +1,107 @@
+@page
+@model CityMove.Web.Pages.MotoristaModel
+@{
+    ViewData["Title"] = "Painel do Motorista";
+}
+
+<h1 class="h3 mb-1">Painel do Motorista</h1>
+<p class="text-muted">Registre a posição do veículo e ocorrências da sua viagem.</p>
+
+@if (!string.IsNullOrEmpty(Model.Mensagem)) { <div class="alert alert-success">@Model.Mensagem</div> }
+@if (!string.IsNullOrEmpty(Model.Erro)) { <div class="alert alert-danger">@Model.Erro</div> }
+
+@if (Model.Viagem is null)
+{
+    <div class="alert alert-warning">Não foi possível carregar seus dados de motorista.</div>
+}
+else if (!Model.Viagem.TemViagem)
+{
+    <div class="card cm-card"><div class="card-body">
+        <h5>Sem viagem em andamento</h5>
+        <p class="text-muted mb-0">
+            Você não tem nenhuma viagem com status <strong>EmAndamento</strong> no momento, então não é
+            possível registrar GPS. Veículo atribuído: <strong>@(Model.Viagem.Placa ?? "—")</strong>
+            (@(Model.Viagem.Linha ?? "sem linha")).
+        </p>
+    </div></div>
+}
+else
+{
+    <div class="row g-4">
+        <div class="col-12 col-lg-6">
+            <div class="card cm-card h-100"><div class="card-body">
+                <h2 class="h5 mb-1">📍 Enviar posição (GPS)</h2>
+                <p class="text-muted">Viagem #@Model.Viagem.ViagemId · @Model.Viagem.Linha · veículo @Model.Viagem.Placa</p>
+
+                <form method="post" asp-page-handler="Gps" id="gpsForm">
+                    <input type="hidden" asp-for="ViagemId" value="@Model.Viagem.ViagemId" />
+                    <input type="hidden" asp-for="VeiculoId" value="@Model.Viagem.VeiculoId" />
+                    <input type="hidden" asp-for="Latitude" id="lat" />
+                    <input type="hidden" asp-for="Longitude" id="lng" />
+                    <input type="hidden" asp-for="Velocidade" id="vel" />
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label class="form-label">Latitude</label>
+                            <input id="latView" class="form-control" readonly placeholder="—" />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">Longitude</label>
+                            <input id="lngView" class="form-control" readonly placeholder="—" />
+                        </div>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-cm-outline" onclick="pegarLocal()">Usar meu GPS</button>
+                        <button type="submit" class="btn btn-cm" id="btnEnviar" disabled>Enviar posição</button>
+                    </div>
+                    <small class="text-muted d-block mt-2" id="gpsHint">Clique em "Usar meu GPS" para capturar sua localização atual.</small>
+                </form>
+            </div></div>
+        </div>
+
+        <div class="col-12 col-lg-6">
+            <div class="card cm-card h-100"><div class="card-body">
+                <h2 class="h5 mb-3">⚠️ Registrar ocorrência</h2>
+                <form method="post" asp-page-handler="Ocorrencia">
+                    <input type="hidden" asp-for="ViagemId" value="@Model.Viagem.ViagemId" />
+                    <input type="hidden" asp-for="MotoristaId" value="@Model.Viagem.MotoristaId" />
+                    <div class="mb-2">
+                        <label class="form-label">Tipo</label>
+                        <select asp-for="TipoOcorrencia" class="form-select">
+                            @foreach (var t in CityMove.Web.Pages.MotoristaModel.Tipos)
+                            {
+                                <option value="@t">@t</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Descrição</label>
+                        <textarea asp-for="Descricao" class="form-control" rows="3" required placeholder="Descreva o que aconteceu..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-cm-accent">Registrar ocorrência</button>
+                </form>
+            </div></div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        function pegarLocal() {
+            var hint = document.getElementById('gpsHint');
+            if (!navigator.geolocation) { hint.textContent = 'Seu navegador não suporta geolocalização.'; return; }
+            hint.textContent = 'Obtendo localização...';
+            navigator.geolocation.getCurrentPosition(function (p) {
+                var lat = p.coords.latitude.toFixed(6), lng = p.coords.longitude.toFixed(6);
+                var vel = p.coords.speed ? (p.coords.speed * 3.6) : 30; // m/s -> km/h
+                document.getElementById('lat').value = lat;
+                document.getElementById('lng').value = lng;
+                document.getElementById('vel').value = vel.toFixed(2);
+                document.getElementById('latView').value = lat;
+                document.getElementById('lngView').value = lng;
+                document.getElementById('btnEnviar').disabled = false;
+                hint.textContent = 'Localização capturada. Agora clique em "Enviar posição".';
+            }, function () { hint.textContent = 'Não foi possível obter a localização (permissão negada?).'; });
+        }
+    </script>
+}

@@ -25,8 +25,8 @@ public static class DbSeeder
 
         // ---- Usuários base ----
         await EnsureUserAsync(userManager, "admin@citymove.com", "Admin@123", "Administrador CityMove", "Admin");
-        await EnsureUserAsync(userManager, "fiscal@citymove.com", "Fiscal@123", "Fiscal CityMove", "Fiscal");
-        await EnsureUserAsync(userManager, "passageiro@citymove.com", "Passageiro@123", "Passageiro Teste", "Passageiro");
+        var fiscalUser = await EnsureUserAsync(userManager, "fiscal@citymove.com", "Fiscal@123", "Fiscal CityMove", "Fiscal");
+        var passUser = await EnsureUserAsync(userManager, "passageiro@citymove.com", "Passageiro@123", "Passageiro Teste", "Passageiro");
 
         // ---- Configurações do sistema ----
         if (!await db.ConfiguracoesSistema.AnyAsync())
@@ -175,6 +175,35 @@ public static class DbSeeder
 
             motoristaIdx++;
         }
+
+        // ---- Fiscal (registro de domínio vinculado ao usuário) ----
+        var fiscal = new Fiscal { UserId = fiscalUser.Id, Matricula = "FISC-001", Setor = "Centro" };
+        db.Fiscais.Add(fiscal);
+
+        // ---- Passageiro (registro de domínio vinculado ao usuário) ----
+        var passageiro = new Passageiro { UserId = passUser.Id, DataNascimento = new DateTime(1995, 5, 20), Telefone = "(63) 99999-0000" };
+        db.Passageiros.Add(passageiro);
+        await db.SaveChangesAsync();
+
+        // ---- Uma viagem CONCLUÍDA para o passageiro poder avaliar ----
+        var primeiraAtrib = await db.AtribuicoesMotorista.OrderBy(a => a.Id).FirstAsync();
+        var primeiraRota = await db.Rotas.OrderBy(r => r.Id).FirstAsync();
+        db.Viagens.Add(new Viagem
+        {
+            AtribuicaoId = primeiraAtrib.Id,
+            RotaId = primeiraRota.Id,
+            HorarioPartida = agora.AddHours(-3),
+            HorarioChegada = agora.AddHours(-2),
+            StatusViagem = StatusViagem.Concluida
+        });
+
+        // ---- Notificações de exemplo para o passageiro ----
+        var primeiraLinha = await db.Linhas.OrderBy(l => l.Id).FirstAsync();
+        db.Notificacoes.AddRange(
+            new Notificacao { PassageiroId = passageiro.Id, LinhaId = primeiraLinha.Id, Mensagem = "Linha L001 terá horário extra hoje às 22h.", EnviadaEm = agora.AddHours(-5) },
+            new Notificacao { PassageiroId = passageiro.Id, Mensagem = "Bem-vindo ao CityMove! Não esqueça de avaliar suas viagens.", EnviadaEm = agora.AddHours(-1) }
+        );
+        await db.SaveChangesAsync();
     }
 
     private record LinhaDef(

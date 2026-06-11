@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using CityMove.API.Dtos;
 using CityMove.Domain.Entities;
 using CityMove.Domain.Enums;
@@ -15,6 +16,30 @@ public class PassageiroController : ControllerBase
 {
     private readonly AppDbContext _db;
     public PassageiroController(AppDbContext db) => _db = db;
+
+    private string? UserId => User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+    // GET /api/passageiro/contexto -> id do passageiro logado, viagens avaliáveis e notificações
+    [HttpGet("contexto")]
+    public async Task<IActionResult> Contexto()
+    {
+        var pas = await _db.Passageiros.FirstOrDefaultAsync(p => p.UserId == UserId);
+        if (pas is null)
+            return Ok(new { passageiroId = 0, avaliaveis = Array.Empty<object>(), notificacoes = Array.Empty<object>() });
+
+        var avaliaveis = await _db.Viagens
+            .Where(v => v.StatusViagem == StatusViagem.Concluida
+                && !_db.AvaliacoesViagem.Any(a => a.ViagemId == v.Id && a.PassageiroId == pas.Id))
+            .Select(v => new { viagemId = v.Id, linha = v.Rota!.Linha!.Nome, quando = v.HorarioChegada })
+            .ToListAsync();
+
+        var notificacoes = await _db.Notificacoes.Where(n => n.PassageiroId == pas.Id)
+            .OrderByDescending(n => n.EnviadaEm)
+            .Select(n => new { n.Mensagem, n.EnviadaEm, n.Lida })
+            .ToListAsync();
+
+        return Ok(new { passageiroId = pas.Id, avaliaveis, notificacoes });
+    }
 
     // POST /api/passageiro/avaliacoes
     // Regra: avaliação só é permitida se a viagem estiver Concluida.

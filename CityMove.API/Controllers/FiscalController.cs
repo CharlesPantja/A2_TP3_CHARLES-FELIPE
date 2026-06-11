@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using CityMove.API.Dtos;
 using CityMove.Domain.Entities;
 using CityMove.Domain.Enums;
@@ -15,6 +16,19 @@ public class FiscalController : ControllerBase
 {
     private readonly AppDbContext _db;
     public FiscalController(AppDbContext db) => _db = db;
+
+    private string? UserId => User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+    // GET /api/fiscal/contexto -> id do fiscal logado + listas para o formulário de infração
+    [HttpGet("contexto")]
+    public async Task<IActionResult> Contexto()
+    {
+        var fiscal = await _db.Fiscais.FirstOrDefaultAsync(f => f.UserId == UserId);
+        var motoristas = await _db.Motoristas.Include(m => m.User)
+            .Select(m => new { m.Id, Nome = m.User!.Nome }).ToListAsync();
+        var veiculos = await _db.Veiculos.Select(v => new { v.Id, v.Placa }).ToListAsync();
+        return Ok(new { fiscalId = fiscal?.Id ?? 0, motoristas, veiculos });
+    }
 
     // GET /api/fiscal/frota  -> situação atual da frota com última posição
     [HttpGet("frota")]

@@ -1,0 +1,100 @@
+@page
+@model CityMove.Web.Pages.FiscalModel
+@{
+    ViewData["Title"] = "Painel do Fiscal";
+}
+
+<h1 class="h3 mb-1">Painel do Fiscal</h1>
+<p class="text-muted">Acompanhe a frota e registre infrações.</p>
+
+@if (!string.IsNullOrEmpty(Model.Mensagem)) { <div class="alert alert-success">@Model.Mensagem</div> }
+@if (!string.IsNullOrEmpty(Model.Erro)) { <div class="alert alert-danger">@Model.Erro</div> }
+
+<div class="row g-4">
+    <div class="col-12 col-lg-7">
+        <div class="card cm-card h-100"><div class="card-body">
+            <h2 class="h5 mb-3">🚍 Frota (@Model.Frota.Count)</h2>
+            @if (Model.Frota.Count == 0)
+            {
+                <p class="text-muted m-0">Nenhum veículo na frota.</p>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover align-middle">
+                        <thead><tr><th>Placa</th><th>Linha</th><th>Status</th><th>Última posição</th></tr></thead>
+                        <tbody>
+                        @foreach (var v in Model.Frota)
+                        {
+                            <tr>
+                                <td class="font-monospace">@v.Placa</td>
+                                <td>@v.Linha</td>
+                                <td>@v.Status</td>
+                                <td>
+                                    @if (v.UltimaPosicao is not null)
+                                    {
+                                        <span>@v.UltimaPosicao.Latitude.ToString("0.0000"), @v.UltimaPosicao.Longitude.ToString("0.0000") · @v.UltimaPosicao.Velocidade km/h</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">sem registro</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div></div>
+    </div>
+
+    <div class="col-12 col-lg-5">
+        <div class="card cm-card h-100"><div class="card-body">
+            <h2 class="h5 mb-3">⚖️ Registrar infração</h2>
+            <form method="post" asp-page-handler="Infracao">
+                <input type="hidden" asp-for="FiscalId" value="@(Model.Ctx?.FiscalId ?? 0)" />
+                <div class="mb-2">
+                    <label class="form-label">Motorista</label>
+                    <select asp-for="MotoristaId" class="form-select" required>
+                        <option value="">Selecione...</option>
+                        @if (Model.Ctx is not null)
+                        {
+                            @foreach (var m in Model.Ctx.Motoristas)
+                            {
+                                <option value="@m.Id">@m.Nome</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">Veículo</label>
+                    <select asp-for="VeiculoId" class="form-select" required>
+                        <option value="">Selecione...</option>
+                        @if (Model.Ctx is not null)
+                        {
+                            @foreach (var v in Model.Ctx.Veiculos)
+                            {
+                                <option value="@v.Id">@v.Placa</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">Tipo</label>
+                    <select asp-for="TipoInfracao" class="form-select">
+                        @foreach (var t in CityMove.Web.Pages.FiscalModel.Tipos)
+                        {
+                            <option value="@t">@t</option>
+                        }
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Descrição</label>
+                    <textarea asp-for="Descricao" class="form-control" rows="3" required placeholder="Descreva a infração..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-cm-accent">Registrar infração</button>
+            </form>
+        </div></div>
+    </div>
+</div>

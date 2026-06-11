@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using CityMove.API.Dtos;
 using CityMove.Domain.Entities;
 using CityMove.Domain.Enums;
@@ -15,6 +16,41 @@ public class MotoristaController : ControllerBase
 {
     private readonly AppDbContext _db;
     public MotoristaController(AppDbContext db) => _db = db;
+
+    private string? UserId => User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+    // GET /api/motorista/viagem-atual -> identifica o motorista logado e sua viagem EmAndamento
+    [HttpGet("viagem-atual")]
+    public async Task<IActionResult> ViagemAtual()
+    {
+        var motorista = await _db.Motoristas.FirstOrDefaultAsync(m => m.UserId == UserId);
+        if (motorista is null)
+            return NotFound(new { erro = "Não há motorista vinculado a este usuário." });
+
+        var atrib = await _db.AtribuicoesMotorista
+            .Where(a => a.MotoristaId == motorista.Id)
+            .OrderByDescending(a => a.DataHoraInicio)
+            .FirstOrDefaultAsync();
+
+        var veiculo = atrib is null ? null
+            : await _db.Veiculos.Include(v => v.Linha).FirstOrDefaultAsync(v => v.Id == atrib.VeiculoId);
+
+        var viagem = atrib is null ? null
+            : await _db.Viagens
+                .Where(v => v.AtribuicaoId == atrib.Id && v.StatusViagem == StatusViagem.EmAndamento)
+                .OrderByDescending(v => v.HorarioPartida)
+                .FirstOrDefaultAsync();
+
+        return Ok(new
+        {
+            motoristaId = motorista.Id,
+            temViagem = viagem != null,
+            viagemId = viagem?.Id ?? 0,
+            veiculoId = atrib?.VeiculoId ?? 0,
+            placa = veiculo?.Placa,
+            linha = veiculo?.Linha?.Nome
+        });
+    }
 
     // POST /api/motorista/gps
     // Regra: só registra GPS se a viagem estiver EmAndamento.

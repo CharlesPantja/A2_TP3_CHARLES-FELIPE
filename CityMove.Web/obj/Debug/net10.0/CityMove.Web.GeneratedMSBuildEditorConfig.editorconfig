@@ -50,6 +50,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRXJyb3IuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/uelto/A2_TP3_CHARLES-FELIPE/CityMove.Web/Pages/Fiscal.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRmlzY2FsLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/uelto/A2_TP3_CHARLES-FELIPE/CityMove.Web/Pages/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
@@ -66,8 +70,16 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTG9nb3V0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/uelto/A2_TP3_CHARLES-FELIPE/CityMove.Web/Pages/Motorista.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTW90b3Jpc3RhLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/uelto/A2_TP3_CHARLES-FELIPE/CityMove.Web/Pages/Painel.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUGFpbmVsLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/uelto/A2_TP3_CHARLES-FELIPE/CityMove.Web/Pages/Passageiro.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUGFzc2FnZWlyby5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/uelto/A2_TP3_CHARLES-FELIPE/CityMove.Web/Pages/Privacy.cshtml]

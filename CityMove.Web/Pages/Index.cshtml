@@ -4,66 +4,104 @@
     ViewData["Title"] = "Início";
 }
 
-<section class="cm-hero">
-    <div class="cm-hero-content">
-        <span class="cm-hero-tag">Transporte Urbano Inteligente</span>
-        <h1 class="display-4 fw-bold mb-3">CityMove</h1>
-        <p class="lead mb-4">
-            A plataforma que conecta o cidadão ao transporte público da cidade.
-            Consulte linhas, horários, paradas e a previsão do tempo &mdash; e, para a equipe
-            de operação, gerencie toda a frota em um só lugar.
-        </p>
-        <div class="d-flex flex-wrap gap-2">
-            <a href="#linhas" class="btn btn-cm btn-lg">Ver linhas disponíveis</a>
-            <a asp-page="/Clima" class="btn btn-light btn-lg">Consultar clima</a>
+<section class="cm-hero cm-rise">
+    <div class="cm-hero-grid">
+        <div>
+            <span class="cm-hero-tag">● Transporte Urbano Inteligente</span>
+            <h1>O transporte da sua cidade<br><span class="hl">na palma da mão</span></h1>
+            <p class="cm-hero-sub">
+                Consulte linhas, horários e paradas, veja a previsão do tempo e
+                acompanhe os ônibus em tempo real no mapa. Rápido, confiável e sem complicação.
+            </p>
+            <div class="cm-hero-actions">
+                <a href="#linhas" class="btn btn-cm btn-lg">Ver linhas &rarr;</a>
+                <a asp-page="/Rastreamento" class="btn btn-cm-outline btn-lg">Mapa ao vivo</a>
+            </div>
+            <div class="cm-hero-stats">
+                <div class="s"><b>@Model.Linhas.Count</b><span>linhas ativas</span></div>
+                <div class="s"><b>24/7</b><span>monitoramento GPS</span></div>
+                <div class="s"><b>Tempo real</b><span>clima &amp; posição</span></div>
+            </div>
+        </div>
+        <div class="cm-hero-visual">
+            <img class="cm-hero-bus" src="~/images/onibusfoto.png" alt="Ônibus CityMove" />
         </div>
     </div>
 </section>
 
+<!-- Consulta rápida de linha -->
+<div class="row justify-content-center mb-5">
+    <div class="col-12 col-lg-9">
+        <div class="cm-quote cm-rise d1">
+            <h3>🔎 Encontre sua linha</h3>
+            <div class="row g-2 align-items-end">
+                <div class="col-12 col-md-8">
+                    <label class="form-label">Selecione a linha</label>
+                    <select id="cm-find-linha" class="form-select">
+                        <option value="">Escolha uma linha...</option>
+                        @foreach (var l in Model.Linhas)
+                        {
+                            <option value="@l.Id">@l.Codigo — @l.Nome</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-12 col-md-4">
+                    <button type="button" class="btn btn-cm w-100" onclick="cmFindLinha()">Ver horários e paradas</button>
+                </div>
+            </div>
+            <div class="d-flex flex-wrap gap-3 mt-3">
+                <span class="cm-chip"><span class="dot"></span> Horários por dia</span>
+                <span class="cm-chip"><span class="dot"></span> Paradas geolocalizadas</span>
+                <span class="cm-chip"><span class="dot"></span> Tarifa atualizada</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recursos -->
 <section class="mb-5">
-    <h2 class="h4 mb-3 text-center">O que você pode fazer no CityMove</h2>
+    <div class="text-center mb-4">
+        <div class="cm-section-kicker">Recursos</div>
+        <h2 class="cm-section-title">Tudo o que você precisa para se locomover</h2>
+    </div>
     <div class="row g-3">
         <div class="col-12 col-md-6 col-lg-3">
-            <div class="card cm-card h-100 text-center">
-                <div class="card-body">
-                    <div class="cm-feature-icon">&#128652;</div>
-                    <h5 class="mt-2">Linhas e rotas</h5>
-                    <p class="text-muted mb-0">Veja todas as linhas de ônibus, o tipo de cada uma e a tarifa.</p>
-                </div>
-            </div>
+            <div class="card cm-card h-100 cm-rise"><div class="card-body">
+                <div class="cm-feature-icon">🚍</div>
+                <h5>Linhas e rotas</h5>
+                <p class="text-muted mb-0">Todas as linhas, com tipo, tarifa e o trajeto de cada rota.</p>
+            </div></div>
         </div>
         <div class="col-12 col-md-6 col-lg-3">
-            <div class="card cm-card h-100 text-center">
-                <div class="card-body">
-                    <div class="cm-feature-icon">&#9200;</div>
-                    <h5 class="mt-2">Horários e paradas</h5>
-                    <p class="text-muted mb-0">Consulte os horários de partida e as paradas de cada linha.</p>
-                </div>
-            </div>
+            <div class="card cm-card h-100 cm-rise d1"><div class="card-body">
+                <div class="cm-feature-icon">⏱️</div>
+                <h5>Horários e paradas</h5>
+                <p class="text-muted mb-0">Horários de partida e a sequência de paradas de cada linha.</p>
+            </div></div>
         </div>
         <div class="col-12 col-md-6 col-lg-3">
-            <div class="card cm-card h-100 text-center">
-                <div class="card-body">
-                    <div class="cm-feature-icon">&#9925;</div>
-                    <h5 class="mt-2">Previsão do tempo</h5>
-                    <p class="text-muted mb-0">Saiba como está o clima antes de sair, em tempo real.</p>
-                </div>
-            </div>
+            <div class="card cm-card h-100 cm-rise d2"><div class="card-body">
+                <div class="cm-feature-icon">🛰️</div>
+                <h5>Mapa ao vivo</h5>
+                <p class="text-muted mb-0">Acompanhe a posição dos ônibus em tempo real no mapa.</p>
+            </div></div>
         </div>
         <div class="col-12 col-md-6 col-lg-3">
-            <div class="card cm-card h-100 text-center">
-                <div class="card-body">
-                    <div class="cm-feature-icon">&#128273;</div>
-                    <h5 class="mt-2">Painel da operação</h5>
-                    <p class="text-muted mb-0">A equipe gerencia linhas, veículos e motoristas com login seguro.</p>
-                </div>
-            </div>
+            <div class="card cm-card h-100 cm-rise d3"><div class="card-body">
+                <div class="cm-feature-icon">⛅</div>
+                <h5>Clima da cidade</h5>
+                <p class="text-muted mb-0">Saiba como está o tempo antes de sair, em tempo real.</p>
+            </div></div>
         </div>
     </div>
 </section>
 
+<!-- Linhas -->
 <div id="linhas" class="d-flex justify-content-between align-items-center mb-3">
-    <h2 class="h4 m-0">Linhas disponíveis</h2>
+    <div>
+        <div class="cm-section-kicker">Operação</div>
+        <h2 class="cm-section-title m-0">Linhas disponíveis</h2>
+    </div>
     <span class="badge cm-badge">@Model.Linhas.Count linha(s)</span>
 </div>
 
@@ -82,18 +120,27 @@ else
             <div class="col-12 col-md-6 col-lg-4">
                 <div class="card cm-card h-100">
                     <div class="card-body">
-                        <div class="d-flex justify-content-between">
+                        <div class="d-flex justify-content-between align-items-start">
                             <h5 class="card-title mb-1">@linha.Nome</h5>
-                            <span class="badge cm-badge align-self-start">@linha.Codigo</span>
+                            <span class="badge cm-badge">@linha.Codigo</span>
                         </div>
                         <p class="text-muted mb-2">@linha.TipoLinha</p>
                         <p class="mb-3">Tarifa: <strong>R$ @linha.Tarifa.ToString("0.00")</strong></p>
                         <a asp-page="/Linhas/Details" asp-route-id="@linha.Id" class="btn btn-cm-outline btn-sm">
-                            Ver horários e paradas
+                            Ver horários e paradas &rarr;
                         </a>
                     </div>
                 </div>
             </div>
         }
     </div>
+}
+
+@section Scripts {
+    <script>
+        function cmFindLinha() {
+            var id = document.getElementById('cm-find-linha').value;
+            if (id) window.location.href = '/Linhas/Details/' + id;
+        }
+    </script>
 }

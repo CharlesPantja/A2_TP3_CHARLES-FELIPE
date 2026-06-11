@@ -28,3 +28,18 @@ public record ApiResult(bool Sucesso, string? Erro);
 public record PosicaoVm(
     int VeiculoId, string? Placa, string? LinhaCodigo, string? LinhaNome,
     decimal Latitude, decimal Longitude, decimal Velocidade, DateTime CaptadoEm);
+
+// ---------- Painel do Motorista ----------
+public record ViagemAtualVm(int MotoristaId, bool TemViagem, int ViagemId, int VeiculoId, string? Placa, string? Linha);
+
+// ---------- Painel do Fiscal ----------
+public record MotoristaOpcaoVm(int Id, string? Nome);
+public record VeiculoOpcaoVm(int Id, string Placa);
+public record FiscalContextoVm(int FiscalId, List<MotoristaOpcaoVm> Motoristas, List<VeiculoOpcaoVm> Veiculos);
+public record FrotaPosVm(decimal Latitude, decimal Longitude, decimal Velocidade, DateTime CaptadoEm);
+public record FrotaItemVm(int Id, string Placa, string Modelo, string Status, string? Linha, FrotaPosVm? UltimaPosicao);
+
+// ---------- Painel do Passageiro ----------
+public record ViagemAvaliavelVm(int ViagemId, string? Linha, DateTime? Quando);
+public record NotificacaoVm(string Mensagem, DateTime EnviadaEm, bool Lida);
+public record PassageiroContextoVm(int PassageiroId, List<ViagemAvaliavelVm> Avaliaveis, List<NotificacaoVm> Notificacoes);

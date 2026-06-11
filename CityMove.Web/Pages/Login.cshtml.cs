@@ -26,9 +26,16 @@ public class LoginModel : PageModel
             return Page();
         }
 
+        var roles = (resultado.Roles ?? Enumerable.Empty<string>()).ToList();
         HttpContext.Session.SetString("token", resultado.Token ?? "");
         HttpContext.Session.SetString("nome", resultado.Nome ?? "");
-        HttpContext.Session.SetString("roles", string.Join(",", resultado.Roles ?? Enumerable.Empty<string>()));
-        return RedirectToPage("/Painel");
+        HttpContext.Session.SetString("roles", string.Join(",", roles));
+
+        // Cada papel vai para o seu próprio painel
+        if (roles.Contains("Admin")) return RedirectToPage("/Painel");
+        if (roles.Contains("Motorista")) return RedirectToPage("/Motorista");
+        if (roles.Contains("Fiscal")) return RedirectToPage("/Fiscal");
+        if (roles.Contains("Passageiro")) return RedirectToPage("/Passageiro");
+        return RedirectToPage("/Index");
     }
 }
