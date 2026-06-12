@@ -64,4 +64,13 @@ public class EscalaModel : PageModel
         else Erro = res.Erro;
         return RedirectToPage();
     }
+
+    public async Task<IActionResult> OnPostExcluirAsync(int id)
+    {
+        if (string.IsNullOrEmpty(Token)) return RedirectToPage("/Login");
+        var res = await _api.ExcluirEscalaAsync(Token, id);
+        if (res.Sucesso) Mensagem = "Escala excluída.";
+        else Erro = res.Erro;
+        return RedirectToPage();
+    }
 }

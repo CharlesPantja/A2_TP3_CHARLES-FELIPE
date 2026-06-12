@@ -41,11 +41,19 @@ public class EscalaController : ControllerBase
     [HttpGet("opcoes")]
     public async Task<IActionResult> GetOpcoes()
     {
+        var hoje = DateTime.Today;
+        // Apenas motoristas APTOS (disponíveis e com CNH válida)
         var motoristas = await _db.Motoristas.Include(m => m.User)
+            .Where(m => m.Disponivel && m.ValidadeCNH >= hoje)
             .Select(m => new { m.Id, Nome = m.User!.Nome }).ToListAsync();
-        var veiculos = await _db.Veiculos.Select(v => new { v.Id, v.Placa }).ToListAsync();
-        var linhas = await _db.Linhas.Select(l => new { l.Id, Nome = l.Codigo + " - " + l.Nome }).ToListAsync();
-        var rotas = await _db.Rotas.Select(r => new { r.Id, r.LinhaId, r.Descricao }).ToListAsync();
+        // Apenas veículos ATIVOS
+        var veiculos = await _db.Veiculos.Where(v => v.StatusVeiculo == StatusVeiculo.Ativo)
+            .Select(v => new { v.Id, v.Placa }).ToListAsync();
+        // Apenas linhas e rotas ATIVAS
+        var linhas = await _db.Linhas.Where(l => l.Ativa)
+            .Select(l => new { l.Id, Nome = l.Codigo + " - " + l.Nome }).ToListAsync();
+        var rotas = await _db.Rotas.Where(r => r.Ativa)
+            .Select(r => new { r.Id, r.LinhaId, r.Descricao }).ToListAsync();
         return Ok(new { motoristas, veiculos, linhas, rotas });
     }
 
@@ -107,5 +115,26 @@ public class EscalaController : ControllerBase
         viagem.HorarioChegada = DateTime.UtcNow;
         await _db.SaveChangesAsync();
         return Ok(new { viagem.Id, Status = viagem.StatusViagem.ToString() });
+    }
+
+    // DELETE /api/escala/{id} -> exclui a escala (atribuição) e todo o histórico de viagens dela
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Excluir(int id)
+    {
+        var atrib = await _db.AtribuicoesMotorista.FindAsync(id);
+        if (atrib is null) return NotFound(new { erro = "Escala não encontrada." });
+
+        var viagemIds = await _db.Viagens.Where(v => v.AtribuicaoId == id).Select(v => v.Id).ToListAsync();
+        if (viagemIds.Count > 0)
+        {
+            _db.RegistrosGPS.RemoveRange(_db.RegistrosGPS.Where(g => viagemIds.Contains(g.ViagemId)));
+            _db.Ocorrencias.RemoveRange(_db.Ocorrencias.Where(o => viagemIds.Contains(o.ViagemId)));
+            _db.AvaliacoesViagem.RemoveRange(_db.AvaliacoesViagem.Where(a => viagemIds.Contains(a.ViagemId)));
+            _db.Viagens.RemoveRange(_db.Viagens.Where(v => v.AtribuicaoId == id));
+        }
+
+        _db.AtribuicoesMotorista.Remove(atrib);
+        await _db.SaveChangesAsync();
+        return NoContent();
     }
 }

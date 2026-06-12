@@ -238,6 +238,9 @@ public class ApiClient
     public Task<ApiResult> ConcluirViagemAsync(string token, object dto)
         => SendAuthAsync(HttpMethod.Post, "api/escala/concluir-viagem", dto, token);
 
+    public Task<ApiResult> ExcluirEscalaAsync(string token, int id)
+        => SendAuthAsync(HttpMethod.Delete, $"api/escala/{id}", null, token);
+
     // ---------- Painel do Motorista ----------
     public Task<ViagemAtualVm?> GetViagemAtualAsync(string token)
         => GetAuthAsync<ViagemAtualVm>("api/motorista/viagem-atual", token);

@@ -53,7 +53,8 @@
                     </div>
                     <div class="mb-2">
                         <label class="form-label">Validade CNH</label>
-                        <input asp-for="ValidadeCNH" type="date" class="form-control" required />
+                        <input asp-for="ValidadeCNH" type="date" class="form-control" required min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                        <small class="text-muted">A carteira não pode estar vencida.</small>
                     </div>
                     <div class="form-check mb-3">
                         <input asp-for="Disponivel" class="form-check-input" />

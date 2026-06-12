@@ -23,10 +23,21 @@ public class MotoristasController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll() =>
-        Ok(await _db.Motoristas.Include(m => m.User)
+    public async Task<IActionResult> GetAll()
+    {
+        // Regra: motorista com CNH vencida fica automaticamente indisponível.
+        var hoje = DateTime.Today;
+        var vencidos = await _db.Motoristas.Where(m => m.Disponivel && m.ValidadeCNH < hoje).ToListAsync();
+        if (vencidos.Count > 0)
+        {
+            foreach (var m in vencidos) m.Disponivel = false;
+            await _db.SaveChangesAsync();
+        }
+
+        return Ok(await _db.Motoristas.Include(m => m.User)
             .Select(m => new { m.Id, m.CNH, m.CategoriaCNH, m.ValidadeCNH, m.Disponivel, Nome = m.User!.Nome, m.User.Email })
             .ToListAsync());
+    }
 
     [HttpGet("{id:int}")]
     public async Task<IActionResult> Get(int id)
@@ -38,6 +49,9 @@ public class MotoristasController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] MotoristaCreateDto dto)
     {
+        if (dto.ValidadeCNH.Date < DateTime.Today)
+            return BadRequest(new { erro = "A CNH está vencida. Não é possível cadastrar um motorista com a carteira vencida." });
+
         if (await _db.Motoristas.AnyAsync(m => m.CNH == dto.CNH))
             return Conflict(new { erro = "Já existe um motorista com esta CNH." });
 

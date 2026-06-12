@@ -73,7 +73,7 @@
             {
                 <div class="table-responsive">
                     <table class="table table-sm align-middle">
-                        <thead><tr><th>Motorista</th><th>Veículo</th><th>Linha</th><th>Viagem</th></tr></thead>
+                        <thead><tr><th>Motorista</th><th>Veículo</th><th>Linha</th><th>Viagem</th><th></th></tr></thead>
                         <tbody>
                         @foreach (var e in Model.Escala)
                         {
@@ -107,6 +107,13 @@
                                             <button type="submit" class="btn btn-sm btn-cm">Iniciar</button>
                                         </form>
                                     }
+                                </td>
+                                <td class="text-end">
+                                    <form method="post" asp-page-handler="Excluir" class="d-inline"
+                                          onsubmit="return confirm('Excluir esta escala e todo o histórico de viagens dela?');">
+                                        <input type="hidden" name="id" value="@e.Id" />
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Excluir</button>
+                                    </form>
                                 </td>
                             </tr>
                         }
