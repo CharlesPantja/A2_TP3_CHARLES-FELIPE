@@ -48,6 +48,5 @@ public record EscalaOpcoesVm(List<MotoristaOpcaoVm> Motoristas, List<VeiculoOpca
 public record EscalaItemVm(int Id, string? Motorista, string? Veiculo, string? Linha, DateTime Inicio, int? ViagemAtivaId);
 
 // ---------- Painel do Passageiro ----------
-public record ViagemAvaliavelVm(int ViagemId, int LinhaId, string? Linha, DateTime? Horario);
 public record NotificacaoVm(string Mensagem, DateTime EnviadaEm, bool Lida);
-public record PassageiroContextoVm(int PassageiroId, List<ViagemAvaliavelVm> Avaliaveis, List<NotificacaoVm> Notificacoes);
+public record PassageiroContextoVm(int PassageiroId, List<NotificacaoVm> Notificacoes);

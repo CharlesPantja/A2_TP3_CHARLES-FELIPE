@@ -64,4 +64,4 @@ public record OcorrenciaDto(int ViagemId, int MotoristaId, TipoOcorrencia TipoOc
 public record InfracaoDto(int FiscalId, int MotoristaId, int VeiculoId, TipoInfracao TipoInfracao, [Required] string Descricao);
 
 // ---- Passageiro ----
-public record AvaliacaoDto(int ViagemId, int PassageiroId, [Range(1, 5)] int Nota, string? Comentario);
+public record AvaliacaoDto(int PassageiroId, string? Linha, string? Placa, [Range(1, 5)] int Nota, string? Comentario);

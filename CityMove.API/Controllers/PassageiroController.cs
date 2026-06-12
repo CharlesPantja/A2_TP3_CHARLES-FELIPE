@@ -25,48 +25,29 @@ public class PassageiroController : ControllerBase
     {
         var pas = await _db.Passageiros.FirstOrDefaultAsync(p => p.UserId == UserId);
         if (pas is null)
-            return Ok(new { passageiroId = 0, avaliaveis = Array.Empty<object>(), notificacoes = Array.Empty<object>() });
-
-        var avaliaveis = await _db.Viagens
-            .Where(v => v.StatusViagem == StatusViagem.Concluida
-                && v.Rota!.Linha!.Ativa
-                && !_db.AvaliacoesViagem.Any(a => a.ViagemId == v.Id && a.PassageiroId == pas.Id))
-            .Select(v => new
-            {
-                viagemId = v.Id,
-                linhaId = v.Rota!.LinhaId,
-                linha = v.Rota.Linha!.Nome,
-                horario = v.HorarioPartida
-            })
-            .ToListAsync();
+            return Ok(new { passageiroId = 0, notificacoes = Array.Empty<object>() });
 
         var notificacoes = await _db.Notificacoes.Where(n => n.PassageiroId == pas.Id)
             .OrderByDescending(n => n.EnviadaEm)
             .Select(n => new { n.Mensagem, n.EnviadaEm, n.Lida })
             .ToListAsync();
 
-        return Ok(new { passageiroId = pas.Id, avaliaveis, notificacoes });
+        return Ok(new { passageiroId = pas.Id, notificacoes });
     }
 
-    // POST /api/passageiro/avaliacoes
-    // Regra: avaliação só é permitida se a viagem estiver Concluida.
+    // POST /api/passageiro/avaliacoes -> avaliação livre (linha + placa informadas, sem vínculo com viagem)
     [HttpPost("avaliacoes")]
     public async Task<IActionResult> Avaliar([FromBody] AvaliacaoDto dto)
     {
-        var viagem = await _db.Viagens.FindAsync(dto.ViagemId);
-        if (viagem is null)
-            return NotFound(new { erro = "Viagem não encontrada." });
-        if (viagem.StatusViagem != StatusViagem.Concluida)
-            return BadRequest(new { erro = "Só é possível avaliar viagens concluídas." });
         if (!await _db.Passageiros.AnyAsync(p => p.Id == dto.PassageiroId))
             return NotFound(new { erro = "Passageiro não encontrado." });
-        if (await _db.AvaliacoesViagem.AnyAsync(a => a.ViagemId == dto.ViagemId && a.PassageiroId == dto.PassageiroId))
-            return Conflict(new { erro = "Você já avaliou esta viagem." });
 
         var avaliacao = new AvaliacaoViagem
         {
-            ViagemId = dto.ViagemId,
+            ViagemId = null,
             PassageiroId = dto.PassageiroId,
+            Linha = dto.Linha,
+            Placa = dto.Placa,
             Nota = dto.Nota,
             Comentario = dto.Comentario,
             AvaliadoEm = DateTime.UtcNow

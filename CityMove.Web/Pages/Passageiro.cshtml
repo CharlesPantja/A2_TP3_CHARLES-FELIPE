@@ -8,7 +8,7 @@
     <h1 class="h3 m-0">Painel do Passageiro</h1>
     <span class="badge cm-badge">👤 Olá, @Model.Nome</span>
 </div>
-<p class="text-muted">Veja suas notificações e avalie suas viagens.</p>
+<p class="text-muted">Veja suas notificações e avalie sua viagem.</p>
 
 @if (!string.IsNullOrEmpty(Model.Mensagem)) { <div class="alert alert-success">@Model.Mensagem</div> }
 @if (!string.IsNullOrEmpty(Model.Erro)) { <div class="alert alert-danger">@Model.Erro</div> }
@@ -17,44 +17,31 @@
     <div class="col-12 col-lg-6">
         <div class="card cm-card h-100"><div class="card-body">
             <h2 class="h5 mb-3">⭐ Avaliar viagem</h2>
-            @if (Model.Ctx is null || Model.Ctx.Avaliaveis.Count == 0)
-            {
-                <p class="text-muted m-0">Você não tem viagens concluídas para avaliar no momento.</p>
-            }
-            else
-            {
-                <form method="post" asp-page-handler="Avaliar">
-                    <input type="hidden" asp-for="PassageiroId" value="@Model.Ctx.PassageiroId" />
-                    <div class="mb-2">
-                        <label class="form-label">Filtrar por linha (opcional)</label>
-                        <select id="linhaSel" class="form-select">
-                            <option value="">Todas as linhas</option>
-                        </select>
-                    </div>
-                    <div class="mb-2">
-                        <label class="form-label">Horário da viagem</label>
-                        <select asp-for="ViagemId" id="horarioSel" class="form-select" required>
-                            <option value="">Selecione o horário...</option>
-                        </select>
-                    </div>
-                    <div class="row g-2 align-items-end">
-                        <div class="col-4">
-                            <label class="form-label">Nota</label>
-                            <select asp-for="Nota" class="form-select">
-                                @for (int n = 5; n >= 1; n--)
-                                {
-                                    <option value="@n">@n ★</option>
-                                }
-                            </select>
-                        </div>
-                        <div class="col-8">
-                            <label class="form-label">Mensagem (opcional)</label>
-                            <input asp-for="Comentario" class="form-control" placeholder="Como foi a viagem?" />
-                        </div>
-                    </div>
-                    <button type="submit" class="btn btn-cm mt-3">Enviar avaliação</button>
-                </form>
-            }
+            <form method="post" asp-page-handler="Avaliar">
+                <input type="hidden" asp-for="PassageiroId" value="@(Model.Ctx?.PassageiroId ?? 0)" />
+                <div class="mb-2">
+                    <label class="form-label">Linha do ônibus</label>
+                    <input asp-for="Linha" class="form-control" required placeholder="Ex.: L001 - Centro / Plano Sul" />
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">Placa do veículo</label>
+                    <input asp-for="Placa" class="form-control" required maxlength="10" placeholder="Ex.: ABC1D23" />
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">Quantas estrelas?</label>
+                    <select asp-for="Nota" class="form-select">
+                        @for (int n = 5; n >= 1; n--)
+                        {
+                            <option value="@n">@(new string('★', n)) (@n)</option>
+                        }
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Mensagem (opcional)</label>
+                    <textarea asp-for="Comentario" class="form-control" rows="3" placeholder="Como foi a viagem?"></textarea>
+                </div>
+                <button type="submit" class="btn btn-cm">Enviar avaliação</button>
+            </form>
         </div></div>
     </div>
 
@@ -78,46 +65,3 @@
         </div></div>
     </div>
 </div>
-
-@section Scripts {
-    <script>
-        var avaliaveis = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Ctx?.Avaliaveis ?? new System.Collections.Generic.List<CityMove.Web.Models.ViagemAvaliavelVm>()));
-
-        function fmtData(iso) {
-            if (!iso) return '';
-            var d = new Date(iso);
-            return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-        }
-
-        (function () {
-            var linhaSel = document.getElementById('linhaSel');
-            var horarioSel = document.getElementById('horarioSel');
-            if (!horarioSel) return;
-
-            // Filtro de linhas (opcional)
-            var linhas = {};
-            avaliaveis.forEach(function (a) { linhas[a.LinhaId] = a.Linha; });
-            Object.keys(linhas).forEach(function (id) {
-                var o = document.createElement('option');
-                o.value = id; o.textContent = linhas[id];
-                linhaSel.appendChild(o);
-            });
-
-            // Horários (com a linha no texto). Já vem preenchido; pode usar sem escolher a linha.
-            function preencherHorarios(lid) {
-                horarioSel.innerHTML = '<option value="">Selecione o horário...</option>';
-                avaliaveis
-                    .filter(function (a) { return !lid || String(a.LinhaId) === String(lid); })
-                    .forEach(function (a) {
-                        var o = document.createElement('option');
-                        o.value = a.ViagemId;
-                        o.textContent = a.Linha + ' — ' + fmtData(a.Horario);
-                        horarioSel.appendChild(o);
-                    });
-            }
-
-            preencherHorarios('');
-            linhaSel.addEventListener('change', function () { preencherHorarios(this.value); });
-        })();
-    </script>
-}

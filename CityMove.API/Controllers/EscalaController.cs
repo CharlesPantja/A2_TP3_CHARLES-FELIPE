@@ -129,7 +129,7 @@ public class EscalaController : ControllerBase
         {
             _db.RegistrosGPS.RemoveRange(_db.RegistrosGPS.Where(g => viagemIds.Contains(g.ViagemId)));
             _db.Ocorrencias.RemoveRange(_db.Ocorrencias.Where(o => viagemIds.Contains(o.ViagemId)));
-            _db.AvaliacoesViagem.RemoveRange(_db.AvaliacoesViagem.Where(a => viagemIds.Contains(a.ViagemId)));
+            _db.AvaliacoesViagem.RemoveRange(_db.AvaliacoesViagem.Where(a => a.ViagemId != null && viagemIds.Contains(a.ViagemId.Value)));
             _db.Viagens.RemoveRange(_db.Viagens.Where(v => v.AtribuicaoId == id));
         }
 

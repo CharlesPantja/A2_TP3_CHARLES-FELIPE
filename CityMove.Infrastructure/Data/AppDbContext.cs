@@ -143,7 +143,8 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
         builder.Entity<AvaliacaoViagem>()
             .HasOne(a => a.Viagem).WithMany(v => v.Avaliacoes)
             .HasForeignKey(a => a.ViagemId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.SetNull);
 
         builder.Entity<AvaliacaoViagem>()
             .HasOne(a => a.Passageiro).WithMany(p => p.Avaliacoes)
