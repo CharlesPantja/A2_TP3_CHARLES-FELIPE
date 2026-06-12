@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CityMove.Domain")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b61464aa87fcfa394680e73171b623bbcf8bec72")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1025de455dcab5c8ca6bdd522e1f0da95d44c290")]
 [assembly: System.Reflection.AssemblyProductAttribute("CityMove.Domain")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CityMove.Domain")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
