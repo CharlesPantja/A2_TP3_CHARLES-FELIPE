@@ -101,6 +101,21 @@ public class ApiClient
         }
     }
 
+    public async Task<ApiResult> RegistrarPassageiroAsync(string nome, string email, string senha)
+    {
+        try
+        {
+            var resp = await _http.PostAsJsonAsync("api/auth/registrar-passageiro", new { nome, email, senha });
+            if (resp.IsSuccessStatusCode) return new ApiResult(true, null);
+            var corpo = await resp.Content.ReadAsStringAsync();
+            return new ApiResult(false, $"Erro {(int)resp.StatusCode}: {corpo}");
+        }
+        catch (Exception ex)
+        {
+            return new ApiResult(false, $"Erro de conexão: {ex.Message}");
+        }
+    }
+
     // ---------- Endpoint autenticado (Admin) ----------
     public async Task<JsonElement?> GetRelatoriosAsync(string token)
     {

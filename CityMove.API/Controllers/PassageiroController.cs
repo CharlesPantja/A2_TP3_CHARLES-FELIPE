@@ -30,7 +30,13 @@ public class PassageiroController : ControllerBase
         var avaliaveis = await _db.Viagens
             .Where(v => v.StatusViagem == StatusViagem.Concluida
                 && !_db.AvaliacoesViagem.Any(a => a.ViagemId == v.Id && a.PassageiroId == pas.Id))
-            .Select(v => new { viagemId = v.Id, linha = v.Rota!.Linha!.Nome, quando = v.HorarioChegada })
+            .Select(v => new
+            {
+                viagemId = v.Id,
+                linhaId = v.Rota!.LinhaId,
+                linha = v.Rota.Linha!.Nome,
+                horario = v.HorarioPartida
+            })
             .ToListAsync();
 
         var notificacoes = await _db.Notificacoes.Where(n => n.PassageiroId == pas.Id)

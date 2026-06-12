@@ -1,6 +1,7 @@
 using CityMove.API.Dtos;
 using CityMove.API.Services;
 using CityMove.Domain.Entities;
+using CityMove.Infrastructure.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -14,13 +15,43 @@ public class AuthController : ControllerBase
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly JwtService _jwt;
+    private readonly AppDbContext _db;
 
     public AuthController(UserManager<ApplicationUser> userManager,
-        SignInManager<ApplicationUser> signInManager, JwtService jwt)
+        SignInManager<ApplicationUser> signInManager, JwtService jwt, AppDbContext db)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _jwt = jwt;
+        _db = db;
+    }
+
+    // POST /api/auth/registrar-passageiro -> cadastro público simples de passageiro
+    [HttpPost("registrar-passageiro")]
+    [AllowAnonymous]
+    public async Task<IActionResult> RegistrarPassageiro([FromBody] RegistrarPassageiroDto dto)
+    {
+        if (await _userManager.FindByEmailAsync(dto.Email) is not null)
+            return Conflict(new { erro = "Já existe uma conta com este e-mail." });
+
+        var user = new ApplicationUser
+        {
+            UserName = dto.Email,
+            Email = dto.Email,
+            EmailConfirmed = true,
+            Nome = dto.Nome,
+            Role = "Passageiro",
+            Ativo = true
+        };
+        var result = await _userManager.CreateAsync(user, dto.Senha);
+        if (!result.Succeeded)
+            return BadRequest(new { erros = result.Errors.Select(e => e.Description) });
+
+        await _userManager.AddToRoleAsync(user, "Passageiro");
+        _db.Passageiros.Add(new Passageiro { UserId = user.Id, DataNascimento = DateTime.UtcNow });
+        await _db.SaveChangesAsync();
+
+        return Ok(new { user.Id, user.Nome, user.Email });
     }
 
     [HttpPost("login")]

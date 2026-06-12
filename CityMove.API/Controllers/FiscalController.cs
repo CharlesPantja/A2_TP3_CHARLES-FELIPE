@@ -26,7 +26,9 @@ public class FiscalController : ControllerBase
         var fiscal = await _db.Fiscais.FirstOrDefaultAsync(f => f.UserId == UserId);
         var motoristas = await _db.Motoristas.Include(m => m.User)
             .Select(m => new { m.Id, Nome = m.User!.Nome }).ToListAsync();
-        var veiculos = await _db.Veiculos.Select(v => new { v.Id, v.Placa }).ToListAsync();
+        // Apenas veículos ATIVOS podem receber infração
+        var veiculos = await _db.Veiculos.Where(v => v.StatusVeiculo == StatusVeiculo.Ativo)
+            .Select(v => new { v.Id, v.Placa }).ToListAsync();
         return Ok(new { fiscalId = fiscal?.Id ?? 0, motoristas, veiculos });
     }
 
@@ -42,6 +44,10 @@ public class FiscalController : ControllerBase
                 v.Modelo,
                 Status = v.StatusVeiculo.ToString(),
                 Linha = v.Linha!.Nome,
+                Motorista = _db.AtribuicoesMotorista.Where(a => a.VeiculoId == v.Id)
+                    .OrderByDescending(a => a.DataHoraInicio)
+                    .Select(a => a.Motorista!.User!.Nome).FirstOrDefault(),
+                TemOcorrencia = _db.Ocorrencias.Any(o => o.Viagem!.Atribuicao!.VeiculoId == v.Id),
                 UltimaPosicao = _db.RegistrosGPS.Where(g => g.VeiculoId == v.Id)
                     .OrderByDescending(g => g.CaptadoEm)
                     .Select(g => new { g.Latitude, g.Longitude, g.Velocidade, g.CaptadoEm })
@@ -59,8 +65,11 @@ public class FiscalController : ControllerBase
             return NotFound(new { erro = "Fiscal não encontrado." });
         if (!await _db.Motoristas.AnyAsync(m => m.Id == dto.MotoristaId))
             return NotFound(new { erro = "Motorista não encontrado." });
-        if (!await _db.Veiculos.AnyAsync(v => v.Id == dto.VeiculoId))
+        var veiculo = await _db.Veiculos.FindAsync(dto.VeiculoId);
+        if (veiculo is null)
             return NotFound(new { erro = "Veículo não encontrado." });
+        if (veiculo.StatusVeiculo != StatusVeiculo.Ativo)
+            return BadRequest(new { erro = "Só é possível registrar infração de veículos com status Ativo." });
 
         var infracao = new Infracao
         {

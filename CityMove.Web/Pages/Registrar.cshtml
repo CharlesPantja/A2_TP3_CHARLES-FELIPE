@@ -1,0 +1,46 @@
+@page
+@model CityMove.Web.Pages.RegistrarModel
+@{
+    ViewData["Title"] = "Criar conta";
+}
+
+<div class="row justify-content-center">
+    <div class="col-12 col-md-6 col-lg-5">
+        <div class="card cm-card">
+            <div class="card-body">
+                <h1 class="h4 mb-1">Criar conta de passageiro</h1>
+                <p class="text-muted">Cadastre-se para acompanhar e avaliar suas viagens.</p>
+
+                @if (!string.IsNullOrEmpty(Model.Sucesso))
+                {
+                    <div class="alert alert-success">
+                        @Model.Sucesso
+                        <a asp-page="/Login" class="alert-link">Entrar agora</a>.
+                    </div>
+                }
+                @if (!string.IsNullOrEmpty(Model.Erro))
+                {
+                    <div class="alert alert-danger">@Model.Erro</div>
+                }
+
+                <form method="post">
+                    <div class="mb-2">
+                        <label class="form-label">Nome</label>
+                        <input asp-for="Nome" class="form-control" required />
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">E-mail (login)</label>
+                        <input asp-for="Email" type="email" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Senha</label>
+                        <input asp-for="Senha" type="password" class="form-control" required />
+                        <small class="text-muted">Mínimo 6 caracteres, com maiúscula e símbolo.</small>
+                    </div>
+                    <button type="submit" class="btn btn-cm w-100">Cadastrar</button>
+                </form>
+                <p class="text-muted mt-3 mb-0">Já tem conta? <a asp-page="/Login">Entrar</a></p>
+            </div>
+        </div>
+    </div>
+</div>

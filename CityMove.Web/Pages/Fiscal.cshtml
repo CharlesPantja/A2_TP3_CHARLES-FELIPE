@@ -22,14 +22,14 @@
             {
                 <div class="table-responsive">
                     <table class="table table-sm table-hover align-middle">
-                        <thead><tr><th>Placa</th><th>Linha</th><th>Status</th><th>Última posição</th></tr></thead>
+                        <thead><tr><th>Motorista</th><th>Placa</th><th>Linha</th><th>Última posição</th><th>Ocorrência</th></tr></thead>
                         <tbody>
                         @foreach (var v in Model.Frota)
                         {
                             <tr>
+                                <td>@(string.IsNullOrEmpty(v.Motorista) ? "—" : v.Motorista)</td>
                                 <td class="font-monospace">@v.Placa</td>
                                 <td>@v.Linha</td>
-                                <td>@v.Status</td>
                                 <td>
                                     @if (v.UltimaPosicao is not null)
                                     {
@@ -38,6 +38,16 @@
                                     else
                                     {
                                         <span class="text-muted">sem registro</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (v.TemOcorrencia)
+                                    {
+                                        <span class="badge bg-danger">Sim</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Não</span>
                                     }
                                 </td>
                             </tr>

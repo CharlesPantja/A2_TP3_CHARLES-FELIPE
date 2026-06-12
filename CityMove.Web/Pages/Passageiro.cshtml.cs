@@ -11,6 +11,7 @@ public class PassageiroModel : PageModel
     public PassageiroModel(ApiClient api) => _api = api;
 
     public PassageiroContextoVm? Ctx { get; set; }
+    public string Nome => HttpContext.Session.GetString("nome") ?? "Passageiro";
 
     [BindProperty] public int ViagemId { get; set; }
     [BindProperty] public int PassageiroId { get; set; }

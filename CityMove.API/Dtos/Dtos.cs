@@ -5,6 +5,7 @@ namespace CityMove.API.Dtos;
 
 // ---- Autenticação ----
 public record LoginDto([Required] string Email, [Required] string Senha);
+public record RegistrarPassageiroDto([Required] string Nome, [Required, EmailAddress] string Email, [Required] string Senha);
 public record RegistroDto([Required] string Nome, [Required, EmailAddress] string Email, [Required] string Senha, [Required] string Role);
 public record TokenResponseDto(string Token, DateTime ExpiraEm, string Nome, string Email, IEnumerable<string> Roles);
 

@@ -4,7 +4,10 @@
     ViewData["Title"] = "Painel do Passageiro";
 }
 
-<h1 class="h3 mb-1">Painel do Passageiro</h1>
+<div class="d-flex justify-content-between align-items-center mb-1 flex-wrap gap-2">
+    <h1 class="h3 m-0">Painel do Passageiro</h1>
+    <span class="badge cm-badge">👤 Olá, @Model.Nome</span>
+</div>
 <p class="text-muted">Veja suas notificações e avalie suas viagens.</p>
 
 @if (!string.IsNullOrEmpty(Model.Mensagem)) { <div class="alert alert-success">@Model.Mensagem</div> }
@@ -13,40 +16,44 @@
 <div class="row g-4">
     <div class="col-12 col-lg-6">
         <div class="card cm-card h-100"><div class="card-body">
-            <h2 class="h5 mb-3">⭐ Avaliar viagens</h2>
+            <h2 class="h5 mb-3">⭐ Avaliar viagem</h2>
             @if (Model.Ctx is null || Model.Ctx.Avaliaveis.Count == 0)
             {
                 <p class="text-muted m-0">Você não tem viagens concluídas para avaliar no momento.</p>
             }
             else
             {
-                @foreach (var v in Model.Ctx.Avaliaveis)
-                {
-                    <form method="post" asp-page-handler="Avaliar" class="border-bottom pb-3 mb-3">
-                        <input type="hidden" asp-for="ViagemId" value="@v.ViagemId" />
-                        <input type="hidden" asp-for="PassageiroId" value="@Model.Ctx.PassageiroId" />
-                        <div class="mb-2">
-                            <strong>@v.Linha</strong>
-                            <span class="text-muted">· viagem #@v.ViagemId</span>
+                <form method="post" asp-page-handler="Avaliar">
+                    <input type="hidden" asp-for="PassageiroId" value="@Model.Ctx.PassageiroId" />
+                    <div class="mb-2">
+                        <label class="form-label">Qual linha você pegou?</label>
+                        <select id="linhaSel" class="form-select" required>
+                            <option value="">Selecione a linha...</option>
+                        </select>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Horário da viagem</label>
+                        <select asp-for="ViagemId" id="horarioSel" class="form-select" required>
+                            <option value="">Selecione o horário...</option>
+                        </select>
+                    </div>
+                    <div class="row g-2 align-items-end">
+                        <div class="col-4">
+                            <label class="form-label">Nota</label>
+                            <select asp-for="Nota" class="form-select">
+                                @for (int n = 5; n >= 1; n--)
+                                {
+                                    <option value="@n">@n ★</option>
+                                }
+                            </select>
                         </div>
-                        <div class="row g-2 align-items-end">
-                            <div class="col-4">
-                                <label class="form-label">Nota</label>
-                                <select asp-for="Nota" class="form-select">
-                                    @for (int n = 5; n >= 1; n--)
-                                    {
-                                        <option value="@n">@n ★</option>
-                                    }
-                                </select>
-                            </div>
-                            <div class="col-8">
-                                <label class="form-label">Comentário (opcional)</label>
-                                <input asp-for="Comentario" class="form-control" placeholder="Como foi a viagem?" />
-                            </div>
+                        <div class="col-8">
+                            <label class="form-label">Mensagem (opcional)</label>
+                            <input asp-for="Comentario" class="form-control" placeholder="Como foi a viagem?" />
                         </div>
-                        <button type="submit" class="btn btn-cm btn-sm mt-2">Enviar avaliação</button>
-                    </form>
-                }
+                    </div>
+                    <button type="submit" class="btn btn-cm mt-3">Enviar avaliação</button>
+                </form>
             }
         </div></div>
     </div>
@@ -71,3 +78,41 @@
         </div></div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        var avaliaveis = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Ctx?.Avaliaveis ?? new System.Collections.Generic.List<CityMove.Web.Models.ViagemAvaliavelVm>()));
+
+        function fmtData(iso) {
+            if (!iso) return '';
+            var d = new Date(iso);
+            return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        (function () {
+            var linhaSel = document.getElementById('linhaSel');
+            var horarioSel = document.getElementById('horarioSel');
+            if (!linhaSel) return;
+
+            // Linhas distintas
+            var linhas = {};
+            avaliaveis.forEach(function (a) { linhas[a.LinhaId] = a.Linha; });
+            Object.keys(linhas).forEach(function (id) {
+                var o = document.createElement('option');
+                o.value = id; o.textContent = linhas[id];
+                linhaSel.appendChild(o);
+            });
+
+            linhaSel.addEventListener('change', function () {
+                horarioSel.innerHTML = '<option value="">Selecione o horário...</option>';
+                var lid = this.value;
+                avaliaveis.filter(function (a) { return String(a.LinhaId) === String(lid); })
+                    .forEach(function (a) {
+                        var o = document.createElement('option');
+                        o.value = a.ViagemId; o.textContent = fmtData(a.Horario);
+                        horarioSel.appendChild(o);
+                    });
+            });
+        })();
+    </script>
+}
