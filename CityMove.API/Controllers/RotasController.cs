@@ -68,6 +68,12 @@ public class RotasController : ControllerBase
     {
         var rota = await _db.Rotas.FindAsync(id);
         if (rota is null) return NotFound();
+
+        var temVinculos = await _db.Viagens.AnyAsync(v => v.RotaId == id)
+            || await _db.RotaParadas.AnyAsync(rp => rp.RotaId == id);
+        if (temVinculos)
+            return Conflict(new { erro = "Não é possível excluir: esta rota tem viagens ou paradas vinculadas." });
+
         _db.Rotas.Remove(rota);
         await _db.SaveChangesAsync();
         return NoContent();

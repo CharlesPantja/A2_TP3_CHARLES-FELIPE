@@ -69,6 +69,13 @@ public class VeiculosController : ControllerBase
     {
         var veiculo = await _db.Veiculos.FindAsync(id);
         if (veiculo is null) return NotFound();
+
+        var temVinculos = await _db.RegistrosGPS.AnyAsync(g => g.VeiculoId == id)
+            || await _db.AtribuicoesMotorista.AnyAsync(a => a.VeiculoId == id)
+            || await _db.Infracoes.AnyAsync(inf => inf.VeiculoId == id);
+        if (temVinculos)
+            return Conflict(new { erro = "Não é possível excluir: este veículo tem registros de GPS, atribuições ou infrações vinculadas." });
+
         _db.Veiculos.Remove(veiculo);
         await _db.SaveChangesAsync();
         return NoContent();

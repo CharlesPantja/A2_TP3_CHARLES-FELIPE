@@ -69,15 +69,17 @@ public class MotoristasController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update(int id, [FromBody] MotoristaCreateDto dto)
+    public async Task<IActionResult> Update(int id, [FromBody] MotoristaUpdateDto dto)
     {
-        var motorista = await _db.Motoristas.FindAsync(id);
+        var motorista = await _db.Motoristas.Include(m => m.User).FirstOrDefaultAsync(m => m.Id == id);
         if (motorista is null) return NotFound();
 
         motorista.CNH = dto.CNH;
         motorista.CategoriaCNH = dto.CategoriaCNH;
         motorista.ValidadeCNH = dto.ValidadeCNH;
         motorista.Disponivel = dto.Disponivel;
+        if (motorista.User is not null && !string.IsNullOrWhiteSpace(dto.Nome))
+            motorista.User.Nome = dto.Nome;
         await _db.SaveChangesAsync();
         return Ok(new { motorista.Id, motorista.CNH, motorista.Disponivel });
     }
@@ -87,6 +89,13 @@ public class MotoristasController : ControllerBase
     {
         var motorista = await _db.Motoristas.FindAsync(id);
         if (motorista is null) return NotFound();
+
+        var temVinculos = await _db.AtribuicoesMotorista.AnyAsync(a => a.MotoristaId == id)
+            || await _db.Ocorrencias.AnyAsync(o => o.MotoristaId == id)
+            || await _db.Infracoes.AnyAsync(inf => inf.MotoristaId == id);
+        if (temVinculos)
+            return Conflict(new { erro = "Não é possível excluir: este motorista tem atribuições, ocorrências ou infrações vinculadas." });
+
         _db.Motoristas.Remove(motorista);
         await _db.SaveChangesAsync();
         return NoContent();

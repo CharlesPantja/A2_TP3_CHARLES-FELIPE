@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CityMove.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+74040d6e61b25bfaeaab577f5f1e29d2c08f0bc7")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+aa831ab55eee19d297a2e3599b2d6c9dfe996962")]
 [assembly: System.Reflection.AssemblyProductAttribute("CityMove.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CityMove.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

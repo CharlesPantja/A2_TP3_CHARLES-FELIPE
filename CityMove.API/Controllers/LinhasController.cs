@@ -65,6 +65,14 @@ public class LinhasController : ControllerBase
     {
         var linha = await _db.Linhas.FindAsync(id);
         if (linha is null) return NotFound();
+
+        var temVinculos = await _db.Veiculos.AnyAsync(v => v.LinhaId == id)
+            || await _db.Rotas.AnyAsync(r => r.LinhaId == id)
+            || await _db.Horarios.AnyAsync(h => h.LinhaId == id)
+            || await _db.AtribuicoesMotorista.AnyAsync(a => a.LinhaId == id);
+        if (temVinculos)
+            return Conflict(new { erro = "Não é possível excluir: esta linha tem veículos, rotas, horários ou atribuições vinculados." });
+
         _db.Linhas.Remove(linha);
         await _db.SaveChangesAsync();
         return NoContent();

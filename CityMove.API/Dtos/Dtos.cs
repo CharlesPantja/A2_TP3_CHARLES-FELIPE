@@ -42,6 +42,14 @@ public record MotoristaCreateDto(
     DateTime ValidadeCNH,
     bool Disponivel);
 
+// ---- Motorista (edição: sem e-mail/senha, que pertencem à conta) ----
+public record MotoristaUpdateDto(
+    string? Nome,
+    [Required, StringLength(11)] string CNH,
+    [Required] string CategoriaCNH,
+    DateTime ValidadeCNH,
+    bool Disponivel);
+
 // ---- Escala (Admin) ----
 public record AtribuirDto(int MotoristaId, int VeiculoId, int LinhaId);
 public record IniciarViagemDto(int AtribuicaoId, int RotaId);
