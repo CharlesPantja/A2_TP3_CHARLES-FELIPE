@@ -30,7 +30,9 @@ public record PosicaoVm(
     decimal Latitude, decimal Longitude, decimal Velocidade, DateTime CaptadoEm);
 
 // ---------- Painel do Motorista ----------
-public record ViagemAtualVm(int MotoristaId, bool TemViagem, int ViagemId, int VeiculoId, string? Placa, string? Linha);
+public record ViagemAtualVm(
+    int MotoristaId, bool Escalado, bool TemViagem, int ViagemId, int VeiculoId,
+    string? Placa, string? Modelo, string? Linha, string? LinhaCodigo, string? Rota, string? Sentido);
 
 // ---------- Painel do Fiscal ----------
 public record MotoristaOpcaoVm(int Id, string? Nome);

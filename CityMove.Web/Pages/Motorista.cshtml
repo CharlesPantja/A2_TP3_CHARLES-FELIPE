@@ -14,20 +14,51 @@
 {
     <div class="alert alert-warning">Não foi possível carregar seus dados de motorista.</div>
 }
-else if (!Model.Viagem.TemViagem)
-{
-    <div class="card cm-card"><div class="card-body">
-        <h5>Sem viagem em andamento</h5>
-        <p class="text-muted mb-0">
-            Você não tem nenhuma viagem com status <strong>EmAndamento</strong> no momento, então não é
-            possível registrar GPS. Veículo atribuído: <strong>@(Model.Viagem.Placa ?? "—")</strong>
-            (@(Model.Viagem.Linha ?? "sem linha")).
-        </p>
-    </div></div>
-}
 else
 {
-    <div class="row g-4">
+    <div class="card cm-card mb-4"><div class="card-body">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+            <h2 class="h5 m-0">🚌 O que você está pilotando</h2>
+            @if (Model.Viagem.TemViagem)
+            {
+                <span class="badge cm-badge">● Em andamento</span>
+            }
+            else
+            {
+                <span class="badge cm-badge">Escalado — aguardando início</span>
+            }
+        </div>
+        <div class="row g-3">
+            <div class="col-6 col-md-3">
+                <div class="text-muted small">Linha</div>
+                <div class="fw-semibold">@(Model.Viagem.LinhaCodigo) @(Model.Viagem.Linha ?? "—")</div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="text-muted small">Veículo</div>
+                <div class="fw-semibold font-monospace">@(Model.Viagem.Placa ?? "—")</div>
+                <div class="text-muted small">@Model.Viagem.Modelo</div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="text-muted small">Rota</div>
+                <div class="fw-semibold">@(Model.Viagem.Rota ?? "— (inicie a viagem)")</div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="text-muted small">Sentido</div>
+                <div class="fw-semibold">@(Model.Viagem.Sentido ?? "—")</div>
+            </div>
+        </div>
+    </div></div>
+
+    if (!Model.Viagem.TemViagem)
+    {
+        <div class="alert alert-warning">
+            Você ainda não tem uma <strong>viagem em andamento</strong>, então o envio de GPS está bloqueado.
+            Peça ao administrador para <strong>iniciar a viagem</strong> na tela de Escala.
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
         <div class="col-12 col-lg-6">
             <div class="card cm-card h-100"><div class="card-body">
                 <h2 class="h5 mb-1">📍 Enviar posição (GPS)</h2>
@@ -83,6 +114,7 @@ else
             </div></div>
         </div>
     </div>
+    }
 }
 
 @section Scripts {

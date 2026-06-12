@@ -41,14 +41,21 @@ public class MotoristaController : ControllerBase
                 .OrderByDescending(v => v.HorarioPartida)
                 .FirstOrDefaultAsync();
 
+        var rota = viagem is null ? null : await _db.Rotas.FindAsync(viagem.RotaId);
+
         return Ok(new
         {
             motoristaId = motorista.Id,
+            escalado = atrib != null,
             temViagem = viagem != null,
             viagemId = viagem?.Id ?? 0,
             veiculoId = atrib?.VeiculoId ?? 0,
             placa = veiculo?.Placa,
-            linha = veiculo?.Linha?.Nome
+            modelo = veiculo == null ? null : $"{veiculo.Marca} {veiculo.Modelo}",
+            linha = veiculo?.Linha?.Nome,
+            linhaCodigo = veiculo?.Linha?.Codigo,
+            rota = rota?.Descricao,
+            sentido = rota?.Sentido
         });
     }
 
