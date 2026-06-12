@@ -29,6 +29,7 @@ public class PassageiroController : ControllerBase
 
         var avaliaveis = await _db.Viagens
             .Where(v => v.StatusViagem == StatusViagem.Concluida
+                && v.Rota!.Linha!.Ativa
                 && !_db.AvaliacoesViagem.Any(a => a.ViagemId == v.Id && a.PassageiroId == pas.Id))
             .Select(v => new
             {

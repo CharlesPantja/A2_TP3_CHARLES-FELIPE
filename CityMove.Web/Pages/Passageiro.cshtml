@@ -26,9 +26,9 @@
                 <form method="post" asp-page-handler="Avaliar">
                     <input type="hidden" asp-for="PassageiroId" value="@Model.Ctx.PassageiroId" />
                     <div class="mb-2">
-                        <label class="form-label">Qual linha você pegou?</label>
-                        <select id="linhaSel" class="form-select" required>
-                            <option value="">Selecione a linha...</option>
+                        <label class="form-label">Filtrar por linha (opcional)</label>
+                        <select id="linhaSel" class="form-select">
+                            <option value="">Todas as linhas</option>
                         </select>
                     </div>
                     <div class="mb-2">
@@ -92,9 +92,9 @@
         (function () {
             var linhaSel = document.getElementById('linhaSel');
             var horarioSel = document.getElementById('horarioSel');
-            if (!linhaSel) return;
+            if (!horarioSel) return;
 
-            // Linhas distintas
+            // Filtro de linhas (opcional)
             var linhas = {};
             avaliaveis.forEach(function (a) { linhas[a.LinhaId] = a.Linha; });
             Object.keys(linhas).forEach(function (id) {
@@ -103,16 +103,21 @@
                 linhaSel.appendChild(o);
             });
 
-            linhaSel.addEventListener('change', function () {
+            // Horários (com a linha no texto). Já vem preenchido; pode usar sem escolher a linha.
+            function preencherHorarios(lid) {
                 horarioSel.innerHTML = '<option value="">Selecione o horário...</option>';
-                var lid = this.value;
-                avaliaveis.filter(function (a) { return String(a.LinhaId) === String(lid); })
+                avaliaveis
+                    .filter(function (a) { return !lid || String(a.LinhaId) === String(lid); })
                     .forEach(function (a) {
                         var o = document.createElement('option');
-                        o.value = a.ViagemId; o.textContent = fmtData(a.Horario);
+                        o.value = a.ViagemId;
+                        o.textContent = a.Linha + ' — ' + fmtData(a.Horario);
                         horarioSel.appendChild(o);
                     });
-            });
+            }
+
+            preencherHorarios('');
+            linhaSel.addEventListener('change', function () { preencherHorarios(this.value); });
         })();
     </script>
 }
