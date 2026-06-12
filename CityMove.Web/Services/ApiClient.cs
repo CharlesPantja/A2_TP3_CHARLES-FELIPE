@@ -222,6 +222,22 @@ public class ApiClient
     public Task<ApiResult> ExcluirMotoristaAsync(string token, int id)
         => SendAuthAsync(HttpMethod.Delete, $"api/motoristas/{id}", null, token);
 
+    // ---------- Escala (Admin) ----------
+    public Task<List<EscalaItemVm>> GetEscalaAsync(string token)
+        => GetAuthListAsync<EscalaItemVm>("api/escala", token);
+
+    public Task<EscalaOpcoesVm?> GetEscalaOpcoesAsync(string token)
+        => GetAuthAsync<EscalaOpcoesVm>("api/escala/opcoes", token);
+
+    public Task<ApiResult> AtribuirAsync(string token, object dto)
+        => SendAuthAsync(HttpMethod.Post, "api/escala/atribuir", dto, token);
+
+    public Task<ApiResult> IniciarViagemAsync(string token, object dto)
+        => SendAuthAsync(HttpMethod.Post, "api/escala/iniciar-viagem", dto, token);
+
+    public Task<ApiResult> ConcluirViagemAsync(string token, object dto)
+        => SendAuthAsync(HttpMethod.Post, "api/escala/concluir-viagem", dto, token);
+
     // ---------- Painel do Motorista ----------
     public Task<ViagemAtualVm?> GetViagemAtualAsync(string token)
         => GetAuthAsync<ViagemAtualVm>("api/motorista/viagem-atual", token);

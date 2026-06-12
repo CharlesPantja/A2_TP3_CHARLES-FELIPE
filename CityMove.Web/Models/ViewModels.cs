@@ -39,6 +39,12 @@ public record FiscalContextoVm(int FiscalId, List<MotoristaOpcaoVm> Motoristas, 
 public record FrotaPosVm(decimal Latitude, decimal Longitude, decimal Velocidade, DateTime CaptadoEm);
 public record FrotaItemVm(int Id, string Placa, string Modelo, string Status, string? Linha, FrotaPosVm? UltimaPosicao);
 
+// ---------- Escala (Admin) ----------
+public record LinhaOpcaoVm(int Id, string Nome);
+public record RotaOpcaoVm(int Id, int LinhaId, string Descricao);
+public record EscalaOpcoesVm(List<MotoristaOpcaoVm> Motoristas, List<VeiculoOpcaoVm> Veiculos, List<LinhaOpcaoVm> Linhas, List<RotaOpcaoVm> Rotas);
+public record EscalaItemVm(int Id, string? Motorista, string? Veiculo, string? Linha, DateTime Inicio, int? ViagemAtivaId);
+
 // ---------- Painel do Passageiro ----------
 public record ViagemAvaliavelVm(int ViagemId, string? Linha, DateTime? Quando);
 public record NotificacaoVm(string Mensagem, DateTime EnviadaEm, bool Lida);

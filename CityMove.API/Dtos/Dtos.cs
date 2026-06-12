@@ -42,6 +42,11 @@ public record MotoristaCreateDto(
     DateTime ValidadeCNH,
     bool Disponivel);
 
+// ---- Escala (Admin) ----
+public record AtribuirDto(int MotoristaId, int VeiculoId, int LinhaId);
+public record IniciarViagemDto(int AtribuicaoId, int RotaId);
+public record ConcluirViagemDto(int ViagemId);
+
 // ---- Execução (Motorista) ----
 public record GpsDto(int VeiculoId, int ViagemId, decimal Latitude, decimal Longitude, decimal Velocidade);
 public record OcorrenciaDto(int ViagemId, int MotoristaId, TipoOcorrencia TipoOcorrencia, [Required] string Descricao);

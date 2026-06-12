@@ -1,0 +1,119 @@
+@page
+@model CityMove.Web.Pages.Admin.EscalaModel
+@{
+    ViewData["Title"] = "Escala de Motoristas";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 m-0">Escala de Motoristas</h1>
+    <a asp-page="/Painel" class="btn btn-link px-0">&larr; Voltar ao painel</a>
+</div>
+<p class="text-muted">Atribua um motorista a um veículo e linha, e inicie a viagem para liberar o envio de GPS.</p>
+
+@if (!string.IsNullOrEmpty(Model.Mensagem)) { <div class="alert alert-success">@Model.Mensagem</div> }
+@if (!string.IsNullOrEmpty(Model.Erro)) { <div class="alert alert-danger">@Model.Erro</div> }
+
+<div class="row g-4">
+    <div class="col-12 col-lg-4">
+        <div class="card cm-card"><div class="card-body">
+            <h2 class="h5 mb-3">Nova atribuição</h2>
+            <form method="post" asp-page-handler="Atribuir">
+                <div class="mb-2">
+                    <label class="form-label">Motorista</label>
+                    <select asp-for="MotoristaId" class="form-select" required>
+                        <option value="">Selecione...</option>
+                        @if (Model.Opcoes is not null)
+                        {
+                            @foreach (var m in Model.Opcoes.Motoristas)
+                            {
+                                <option value="@m.Id">@m.Nome</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">Veículo</label>
+                    <select asp-for="VeiculoId" class="form-select" required>
+                        <option value="">Selecione...</option>
+                        @if (Model.Opcoes is not null)
+                        {
+                            @foreach (var v in Model.Opcoes.Veiculos)
+                            {
+                                <option value="@v.Id">@v.Placa</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Linha</label>
+                    <select asp-for="LinhaId" class="form-select" required>
+                        <option value="">Selecione...</option>
+                        @if (Model.Opcoes is not null)
+                        {
+                            @foreach (var l in Model.Opcoes.Linhas)
+                            {
+                                <option value="@l.Id">@l.Nome</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-cm">Atribuir</button>
+            </form>
+        </div></div>
+    </div>
+
+    <div class="col-12 col-lg-8">
+        <div class="card cm-card"><div class="card-body">
+            <h2 class="h5 mb-3">Escala atual (@Model.Escala.Count)</h2>
+            @if (Model.Escala.Count == 0)
+            {
+                <p class="text-muted m-0">Nenhuma atribuição. Crie uma ao lado.</p>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-sm align-middle">
+                        <thead><tr><th>Motorista</th><th>Veículo</th><th>Linha</th><th>Viagem</th></tr></thead>
+                        <tbody>
+                        @foreach (var e in Model.Escala)
+                        {
+                            <tr>
+                                <td>@e.Motorista</td>
+                                <td class="font-monospace">@e.Veiculo</td>
+                                <td>@e.Linha</td>
+                                <td style="min-width: 240px;">
+                                    @if (e.ViagemAtivaId is not null)
+                                    {
+                                        <form method="post" asp-page-handler="Concluir" class="d-flex align-items-center gap-2">
+                                            <span class="badge cm-badge">Em andamento</span>
+                                            <input type="hidden" name="ViagemId" value="@e.ViagemAtivaId" />
+                                            <button type="submit" class="btn btn-sm btn-cm-outline">Concluir</button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <form method="post" asp-page-handler="Iniciar" class="d-flex align-items-center gap-2">
+                                            <input type="hidden" name="AtribuicaoId" value="@e.Id" />
+                                            <select name="RotaId" class="form-select form-select-sm" required style="max-width: 150px;">
+                                                <option value="">Rota...</option>
+                                                @if (Model.Opcoes is not null)
+                                                {
+                                                    @foreach (var r in Model.Opcoes.Rotas)
+                                                    {
+                                                        <option value="@r.Id">@r.Descricao</option>
+                                                    }
+                                                }
+                                            </select>
+                                            <button type="submit" class="btn btn-sm btn-cm">Iniciar</button>
+                                        </form>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div></div>
+    </div>
+</div>
